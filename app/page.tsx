@@ -11,8 +11,6 @@ const ComingSoonPage = () => {
     setMounted(true);
   }, []);
 
-  console.log(process.env.NEXT_PUBLIC_AUTHENTICATION);
-
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
     setIsSubscribed(true);
