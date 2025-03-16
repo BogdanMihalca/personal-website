@@ -29,7 +29,10 @@ const CyberpunkButton = ({
   type = "button",
   icon,
 }: CyberpunkButtonProps) => {
-  useGlitchText({ interval: 100 });
+  const { text } = useGlitchText({
+    text: loading ? loadingText : children?.toString() || "",
+    interval: 100,
+  });
   const [cursorBlink, setCursorBlink] = useState(true);
 
   const variants = {
@@ -148,12 +151,7 @@ const CyberpunkButton = ({
       <span className="relative z-10 inline-flex items-center whitespace-nowrap">
         {icon && <span className="mr-1">{icon}</span>}
 
-        <span
-          className="glitch-text"
-          data-text={loading ? loadingText : children}
-        >
-          {loading ? loadingText : children}
-        </span>
+        <span>{text}</span>
         <span className={`ml-1 ${cursorBlink ? "opacity-100" : "opacity-0"}`}>
           █
         </span>

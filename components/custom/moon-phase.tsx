@@ -2,64 +2,83 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { useGlitchText } from "@/lib/hooks/useGlitchText";
+// import { useGlitchText } from "@/lib/hooks/useGlitchText";
 import { CyberpunkButton } from "./cyber-button";
+import { useGlitchText } from "@/lib/hooks/useGlitchText";
 
 const MoonPhase = () => {
   const [moonImageUrl, setMoonImageUrl] = useState<string | null>(null);
   const [moonData, setMoonData] = useState<any>(null); //eslint-disable-line
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  useGlitchText({ interval: 200 });
+  const { text: sync } = useGlitchText({
+    text: `SYNC: ${new Date().toISOString().split("T")[1].substring(0, 8)}`,
+  });
+  const { text: transmissionError } = useGlitchText({
+    text: "TRANSMISSION ERROR",
+  });
+  const { text: lunnarInterface } = useGlitchText({
+    text: "LUNAR INTERFACE v3.1",
+  });
+  const { text: systemError } = useGlitchText({
+    text: "SYSTEM ERROR • CHECK CONSOLE",
+  });
+  const { text: moonPhase } = useGlitchText({
+    text: "CURRENT LUNAR PHASE • LIVE FEED",
+  });
 
   const fetchMoonPhase = async () => {
     setLoading(true);
     setError(null);
 
-    try {
-      const position = await new Promise<GeolocationPosition>(
-        (resolve, reject) => {
-          navigator.geolocation.getCurrentPosition(resolve, reject, {
-            timeout: 10000,
-            enableHighAccuracy: true,
-          });
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          console.log("Position:", position);
+          try {
+            const { latitude, longitude } = position.coords;
+            console.log("Latitude:", latitude, "Longitude:", longitude);
+
+            const formattedLat = latitude.toFixed(4);
+            const formattedLon = longitude.toFixed(4);
+            // Add artificial delay to simulate network latency
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+
+            const response = await fetch(
+              `/api/moon-phase?lat=${formattedLat}&lon=${formattedLon}`
+            );
+
+            if (!response.ok) {
+              throw new Error("DATA TRANSMISSION FAILED");
+            }
+
+            const data = await response.json();
+
+            if (data.data && data.data.imageUrl) {
+              setMoonImageUrl(data.data.imageUrl);
+              setMoonData({
+                coords: `${formattedLat}°N ${formattedLon}°E`,
+                timestamp: new Date().toISOString(),
+                ...data.data,
+              });
+            }
+          } catch (error: unknown) {
+            console.error(error);
+            setError(
+              error instanceof Error
+                ? error.message
+                : "An unknown error occurred"
+            );
+          }
+          setLoading(false);
+        },
+        () => {
+          setError("Unable to retrieve your location");
+          setLoading(false);
         }
       );
-
-      const { latitude, longitude } = position.coords;
-
-      const formattedLat = latitude.toFixed(4);
-      const formattedLon = longitude.toFixed(4);
-
-      // Add artificial delay to simulate network latency
-      await new Promise((resolve) => setTimeout(resolve, 5000));
-
-      const response = await fetch(
-        `/api/moon-phase?lat=${formattedLat}&lon=${formattedLon}`
-      );
-
-      if (!response.ok) {
-        throw new Error("DATA TRANSMISSION FAILED");
-      }
-
-      const data = await response.json();
-
-      if (data.data && data.data.imageUrl) {
-        setMoonImageUrl(data.data.imageUrl);
-        setMoonData({
-          coords: `${formattedLat}°N ${formattedLon}°E`,
-          timestamp: new Date().toISOString(),
-          ...data.data,
-        });
-      } else {
-        throw new Error("CORRUPT DATA RECEIVED");
-      }
-    } catch (error) {
-      setError(
-        error instanceof Error ? error.message : "SYS_ERROR: UNKNOWN FAILURE"
-      );
-      console.error(error);
-    } finally {
+    } else {
+      setError("GEOLOCATION NOT AVAILABLE");
       setLoading(false);
     }
   };
@@ -85,25 +104,17 @@ const MoonPhase = () => {
           </div>
 
           <h2
-            className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500 z-20 glitch-text"
+            className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500 z-20"
             data-text="LUNAR INTERFACE v3.1"
           >
-            LUNAR INTERFACE v3.1
+            {lunnarInterface}
           </h2>
 
           <div className="text-xs font-mono text-purple-400 mt-1 tracking-wider">
             {loading ? (
               <span className="animate-pulse">ESTABLISHING CONNECTION...</span>
             ) : (
-              <span
-                className="glitch-text"
-                data-text={`SYNC: ${new Date()
-                  .toISOString()
-                  .split("T")[1]
-                  .substring(0, 8)}`}
-              >
-                SYNC: {new Date().toISOString().split("T")[1].substring(0, 8)}
-              </span>
+              <span>{sync}</span>
             )}
           </div>
         </div>
@@ -134,10 +145,10 @@ const MoonPhase = () => {
           ) : error ? (
             <div className="flex flex-col items-center justify-center h-full text-red-500 p-4">
               <div
-                className="text-xl mb-2 font-mono animate-pulse glitch-text"
+                className="text-xl mb-2 font-mono animate-pulse"
                 data-text="TRANSMISSION ERROR"
               >
-                TRANSMISSION ERROR
+                {transmissionError}
               </div>
               <div className="text-sm text-red-400 font-mono">
                 ERROR_CODE: {(Math.random() * 9999).toFixed(0)}
@@ -185,19 +196,9 @@ const MoonPhase = () => {
           {loading ? (
             <span className="animate-pulse">ANALYZING LUNAR DATA...</span>
           ) : error ? (
-            <span
-              className="text-red-400 glitch-text"
-              data-text="SYSTEM ERROR • CHECK CONSOLE"
-            >
-              SYSTEM ERROR • CHECK CONSOLE
-            </span>
+            <span className="text-red-400 "> {systemError}</span>
           ) : (
-            <span
-              className="glitch-text"
-              data-text="CURRENT LUNAR PHASE • LIVE FEED"
-            >
-              CURRENT LUNAR PHASE • LIVE FEED
-            </span>
+            <span>{moonPhase}</span>
           )}
         </div>
 

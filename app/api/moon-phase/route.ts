@@ -9,12 +9,12 @@ export async function GET(req: Request) {
   const authString = btoa(
     `${process.env.ASTRONOMY_APP_ID}:${process.env.ASTRONOMY_API_KEY}`
   );
-
+  console.log("Auth String:------->", authString);
   const response = await fetch(moonPhaseUrl, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json",
       Authorization: `Basic ${authString}`,
+      Origin: "https://astronomyapi.com",
     },
     body: JSON.stringify({
       format: "png",
@@ -37,7 +37,8 @@ export async function GET(req: Request) {
     }),
   });
 
-  const data = (await response.json()) as { data: { imageUrl: string } };
+  const data = await response.json();
+  console.log("Moon Phase Data:------->", data);
 
   if (!response.ok) {
     return new Response(
