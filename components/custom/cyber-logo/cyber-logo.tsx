@@ -43,7 +43,7 @@ export const CyberpunkLogo: React.FC<CyberpunkLogoProps> = ({
   return (
     <Link href="/">
       <div className={`logo-glitch relative ${className}`}>
-        <span className="text-2xl font-bold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500">
+        <span className="text-2xl font-bold tracking-wider text-transparent bg-clip-text bg-linear-to-r from-cyan-400 via-purple-500 to-pink-500">
           {nameToRender}
         </span>
         <span className="absolute top-0 left-0 w-full h-full text-2xl font-bold tracking-wider text-cyan-400 logo-glitch-1">

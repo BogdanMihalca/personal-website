@@ -2,8 +2,8 @@ const Terminal = () => {
   return (
     <div className="fixed bottom-10 right-6 z-100 cursor-pointer transform hover:scale-110 transition-transform">
       <div className="relative">
-        <div className="absolute inset-0 blur-md bg-gradient-to-r from-cyan-400/30 to-fuchsia-400/30 rounded-full" />
-        <div className="absolute inset-0 blur-sm bg-gradient-to-br from-cyan-500/20 to-fuchsia-500/20 rounded-full animate-pulse" />
+        <div className="absolute inset-0 blur-md bg-linear-to-r from-cyan-400/30 to-fuchsia-400/30 rounded-full" />
+        <div className="absolute inset-0 blur-xs bg-linear-to-br from-cyan-500/20 to-fuchsia-500/20 rounded-full animate-pulse" />
 
         <svg
           width="60"

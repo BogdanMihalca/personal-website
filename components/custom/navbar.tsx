@@ -76,7 +76,7 @@ const Navbar = () => {
           <div className="md:hidden">
             <button
               onClick={toggleMenu}
-              className="text-gray-300 hover:text-cyan-400 focus:outline-none"
+              className="text-gray-300 hover:text-cyan-400 focus:outline-hidden"
             >
               <div className="w-6 h-5 flex flex-col justify-between">
                 <span

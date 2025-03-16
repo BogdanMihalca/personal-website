@@ -53,7 +53,7 @@ export const HologramContainer = ({
     <motion.div
       className={cn(
         "relative overflow-hidden rounded-md",
-        "backdrop-blur-sm transition-all duration-300",
+        "backdrop-blur-xs transition-all duration-300",
         {
           "border border-neon-cyan/30": variant === "neon",
           "border border-neon-purple/30": variant === "holo",

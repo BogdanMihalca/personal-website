@@ -21,27 +21,27 @@ const CyberpunkHero = () => {
   return (
     <div className="relative min-h-screen overflow-hidden">
       <div className="absolute inset-0 z-0 opacity-40">
-        <div className="absolute h-px w-full top-1/3 bg-gradient-to-r from-transparent via-fuchsia-600 to-transparent animate-pulse" />
+        <div className="absolute h-px w-full top-1/3 bg-linear-to-r from-transparent via-fuchsia-600 to-transparent animate-pulse" />
         <div
-          className="absolute h-px w-full top-2/3 bg-gradient-to-r from-transparent via-cyan-500 to-transparent animate-pulse"
+          className="absolute h-px w-full top-2/3 bg-linear-to-r from-transparent via-cyan-500 to-transparent animate-pulse"
           style={{ animationDelay: "1s" }}
         />
         <div
-          className="absolute w-px h-full left-1/3 bg-gradient-to-b from-transparent via-lime-500 to-transparent animate-pulse"
+          className="absolute w-px h-full left-1/3 bg-linear-to-b from-transparent via-lime-500 to-transparent animate-pulse"
           style={{ animationDelay: "0.5s" }}
         />
         <div
-          className="absolute w-px h-full right-1/3 bg-gradient-to-b from-transparent via-fuchsia-500 to-transparent animate-pulse"
+          className="absolute w-px h-full right-1/3 bg-linear-to-b from-transparent via-fuchsia-500 to-transparent animate-pulse"
           style={{ animationDelay: "1.5s" }}
         />
       </div>
 
       <div className="absolute inset-0 z-0">
-        <div className="absolute w-full h-1/2 bg-gradient-to-b from-purple-900/0 via-fuchsia-900/20 to-transparent" />
-        <div className="absolute bottom-0 w-full h-1/2 bg-gradient-to-t from-cyan-900/0 via-cyan-900/20 to-transparent" />
-        <div className="absolute w-96 h-96 rounded-full bg-gradient-to-r from-fuchsia-600/30 to-purple-800/10 blur-3xl -left-24 top-1/3" />
-        <div className="absolute w-96 h-96 rounded-full bg-gradient-to-r from-cyan-500/30 to-blue-800/10 blur-3xl right-0 top-12" />
-        <div className="absolute w-full h-96 bg-gradient-to-r from-lime-500/10 via-cyan-900/5 to-fuchsia-500/10 blur-3xl left-0 bottom-0" />
+        <div className="absolute w-full h-1/2 bg-linear-to-b from-purple-900/0 via-fuchsia-900/20 to-transparent" />
+        <div className="absolute bottom-0 w-full h-1/2 bg-linear-to-t from-cyan-900/0 via-cyan-900/20 to-transparent" />
+        <div className="absolute w-96 h-96 rounded-full bg-linear-to-r from-fuchsia-600/30 to-purple-800/10 blur-3xl -left-24 top-1/3" />
+        <div className="absolute w-96 h-96 rounded-full bg-linear-to-r from-cyan-500/30 to-blue-800/10 blur-3xl right-0 top-12" />
+        <div className="absolute w-full h-96 bg-linear-to-r from-lime-500/10 via-cyan-900/5 to-fuchsia-500/10 blur-3xl left-0 bottom-0" />
       </div>
 
       <div className="container mx-auto px-4 relative z-10 flex flex-col items-start mt-20 lg:mt-0 lg:justify-center h-screen">
@@ -51,8 +51,8 @@ const CyberpunkHero = () => {
           }`}
         >
           <div className="relative mb-6 inline-block">
-            <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 via-fuchsia-500 to-cyan-500 rounded p-px animate-gradient-x"></div>
-            <Badge className="relative bg-black/80 text-cyan-400 backdrop-blur-sm py-2 px-3 border-0 text-sm font-mono">
+            <div className="absolute inset-0 bg-linear-to-r from-cyan-500 via-fuchsia-500 to-cyan-500 rounded p-px animate-gradient-x"></div>
+            <Badge className="relative bg-black/80 text-cyan-400 backdrop-blur-xs py-2 px-3 border-0 text-sm font-mono">
               <Terminal className="mr-2 h-3 w-3 text-fuchsia-500" /> MBC _v1.0
             </Badge>
           </div>
@@ -67,7 +67,7 @@ const CyberpunkHero = () => {
                 : "0 0 10px rgba(0, 255, 255, 0.5), 0 0 20px rgba(255, 0, 255, 0.3)",
             }}
           >
-            <span className="inline-block bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-fuchsia-500 to-cyan-400 animate-gradient-x">
+            <span className="inline-block bg-clip-text text-transparent bg-linear-to-r from-cyan-400 via-fuchsia-500 to-cyan-400 animate-gradient-x">
               BOGDAN MIHALCA
             </span>
             <br />
@@ -84,9 +84,9 @@ const CyberpunkHero = () => {
           <div className="flex flex-wrap gap-4 mt-8">
             <Button
               size="lg"
-              className="bg-gradient-to-r from-cyan-600 to-fuchsia-600 hover:from-cyan-500 hover:to-fuchsia-500 text-white border-0 relative overflow-hidden group"
+              className="bg-linear-to-r from-cyan-600 to-fuchsia-600 hover:from-cyan-500 hover:to-fuchsia-500 text-white border-0 relative overflow-hidden group"
             >
-              <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-cyan-600/0 via-white/10 to-cyan-600/0 transform -translate-x-full group-hover:translate-x-full transition-transform duration-700"></span>
+              <span className="absolute inset-0 w-full h-full bg-linear-to-r from-cyan-600/0 via-white/10 to-cyan-600/0 transform -translate-x-full group-hover:translate-x-full transition-transform duration-700"></span>
               <span className="relative flex items-center">
                 JACK IN <Zap className="ml-2 h-4 w-4" />
               </span>
@@ -96,15 +96,15 @@ const CyberpunkHero = () => {
               variant="outline"
               className="border border-cyan-500/50 text-cyan-400 hover:bg-cyan-950/50 relative group"
             >
-              <span className="absolute inset-0 w-1/2 h-px bg-gradient-to-r from-transparent via-cyan-400 to-transparent -translate-x-full group-hover:translate-x-full transition-all duration-700"></span>
-              <span className="absolute inset-0 w-1/2 h-px bottom-0 bg-gradient-to-r from-transparent via-fuchsia-400 to-transparent -translate-x-full group-hover:translate-x-full transition-all duration-700 delay-100"></span>
+              <span className="absolute inset-0 w-1/2 h-px bg-linear-to-r from-transparent via-cyan-400 to-transparent -translate-x-full group-hover:translate-x-full transition-all duration-700"></span>
+              <span className="absolute inset-0 w-1/2 h-px bottom-0 bg-linear-to-r from-transparent via-fuchsia-400 to-transparent -translate-x-full group-hover:translate-x-full transition-all duration-700 delay-100"></span>
               <Code className="mr-2 h-4 w-4 text-fuchsia-400" /> ACCESS SOURCE
             </Button>
           </div>
 
           <div className="mt-8 p-0.5 relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/50 via-fuchsia-500/20 to-cyan-500/50 rounded-sm opacity-70">
-              <div className="flex flex-wrap gap-3 bg-black/30 backdrop-blur-sm p-3 rounded-sm relative z-10">
+            <div className="absolute inset-0 bg-linear-to-r from-cyan-500/50 via-fuchsia-500/20 to-cyan-500/50 rounded-sm opacity-70">
+              <div className="flex flex-wrap gap-3 bg-black/30 backdrop-blur-xs p-3 rounded-sm relative z-10">
                 {[
                   {
                     name: "React",

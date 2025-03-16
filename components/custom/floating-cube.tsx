@@ -53,7 +53,7 @@ const FloatingCube = () => {
         ].map((face, index) => (
           <div
             key={index}
-            className={`absolute w-full h-full bg-gradient-to-br ${face.bg} border border-neon-cyan`}
+            className={`absolute w-full h-full bg-linear-to-br ${face.bg} border border-neon-cyan`}
             style={{
               transform: face.transform,
               backfaceVisibility: "hidden",
