@@ -1,6 +1,7 @@
 import { Audiowide, Orbitron } from "next/font/google";
 
 const audiowide = Audiowide({
+  subsets: ["latin"],
   weight: "400",
   variable: "--font-audiowide",
   display: "swap",
