@@ -9,7 +9,6 @@ export async function GET(req: Request) {
   const authString = btoa(
     `${process.env.ASTRONOMY_APP_ID}:${process.env.ASTRONOMY_API_KEY}`
   );
-  console.log("Auth String:------->", authString);
   const response = await fetch(moonPhaseUrl, {
     method: "POST",
     headers: {
@@ -26,8 +25,8 @@ export async function GET(req: Request) {
         textColor: "red",
       },
       observer: {
-        latitude: lat,
-        longitude: lon,
+        latitude: Number(lat),
+        longitude: Number(lon),
         date: new Date().toISOString(),
       },
       view: {
