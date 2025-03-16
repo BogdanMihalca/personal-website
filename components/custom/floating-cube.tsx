@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 
 const FloatingCube = () => {
   return (
-    <div className="hidden lg:block absolute bottom-80 right-80 z-10 opacity-90">
+    <div className="hidden lg:block absolute bottom-80 right-80 z-0 opacity-90">
       <motion.div
         animate={{
           rotateY: [0, 180, 360],
@@ -62,7 +62,7 @@ const FloatingCube = () => {
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="text-lg font-bold text-white opacity-80">
                 {index % 2 === 0 ? (
-                  <div className="p-4 text-xs font-mono text-neon-green">
+                  <div className="p-4 text-xs   text-neon-green">
                     <pre className="bg-black text-green-500 p-2 rounded-md shadow-lg">
                       {`const hello = "world";\nconsole.log(hello);`}
                     </pre>

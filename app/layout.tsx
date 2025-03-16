@@ -1,11 +1,15 @@
+import { AnimatedStars } from "@/components/custom/animated-stars";
+import CyberpunkWeather from "@/components/custom/cyberpunk-weather";
+import { EnergyMouseField } from "@/components/custom/energy-mouse-field";
 import { Navbar } from "@/components/custom/navbar";
+import { SideDisplay } from "@/components/custom/side-display";
+import { Terminal } from "@/components/custom/terminal";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Moon, SunMoon } from "lucide-react";
 import type { Metadata } from "next";
 import { audiowide } from "./fonts";
 import "./globals.css";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { EnergyMouseField } from "@/components/custom/energy-mouse-field";
-import { AnimatedStars } from "@/components/custom/animated-stars";
-import { Terminal } from "@/components/custom/terminal";
+import { MoonPhase } from "@/components/custom/moon-phase";
 
 export const metadata: Metadata = {
   title: "Bogdan Mihalca",
@@ -27,6 +31,30 @@ export default function RootLayout({
           <Navbar />
           <ScrollArea>{children}</ScrollArea>
           <Terminal />
+          <SideDisplay
+            icon={<SunMoon width={30} height={30} />}
+            title="WEATHER CONTROL"
+            theme="cyber"
+            position="right"
+            verticalPosition="top"
+            verticalOffset={100}
+            collapsedSize={50}
+            width={420}
+          >
+            <CyberpunkWeather />
+          </SideDisplay>
+          <SideDisplay
+            icon={<Moon width={30} height={30} />}
+            title="MOON CONTROL"
+            theme="cyber"
+            position="right"
+            verticalPosition="top"
+            verticalOffset={170}
+            collapsedSize={50}
+            width={420}
+          >
+            <MoonPhase />
+          </SideDisplay>
         </div>
       </body>
     </html>

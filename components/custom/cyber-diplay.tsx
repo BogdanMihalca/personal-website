@@ -50,7 +50,7 @@ const CyberpunkDisplay: FC<{ title: string; children: ReactElement }> = ({
   };
 
   return (
-    <div className="relative w-[500px]">
+    <div className="relative w-[300px]">
       <div
         className="absolute inset-0 z-0"
         style={{
@@ -122,7 +122,7 @@ const CyberpunkDisplay: FC<{ title: string; children: ReactElement }> = ({
                 }}
               >
                 <div className="hidden md:flex items-center">
-                  <div className="text-cyan-400 text-xs font-mono mr-2 opacity-70">
+                  <div className="text-cyan-400 text-xs   mr-2 opacity-70">
                     SYS://
                   </div>
                   <div className="h-3 w-3 bg-cyan-400 rounded-full animate-pulse" />
@@ -193,13 +193,13 @@ const CyberpunkDisplay: FC<{ title: string; children: ReactElement }> = ({
                   </motion.h2>
                 </div>
 
-                <div className="hidden md:block text-cyan-400/70 text-xs font-mono ml-2">
+                <div className="hidden md:block text-cyan-400/70 text-xs   ml-2">
                   <span className="animate-pulse">█</span>
                   <span>{generateHexLine(4)}</span>
                 </div>
               </div>
 
-              <div className="flex justify-between bg-black text-xs font-mono overflow-hidden text-cyan-500/70 px-1">
+              <div className="flex justify-between bg-black text-xs   overflow-hidden text-cyan-500/70 px-1">
                 <motion.div
                   animate={{ opacity: [0.5, 0.8, 0.5] }}
                   transition={{ duration: 3, repeat: Infinity }}
@@ -267,7 +267,7 @@ const CyberpunkDisplay: FC<{ title: string; children: ReactElement }> = ({
                     repeat: Infinity,
                     ease: "linear",
                   }}
-                  className="text-xs text-cyan-400/60 font-mono tracking-wider py-1 inline-block"
+                  className="text-xs text-cyan-400/60   tracking-wider py-1 inline-block"
                 >
                   NET//BREACH:::{generateHexLine(16)}:::AUTH_BYPASS_ACTIVE:::
                   {generateHexLine(8)}:::NEURO_LINK_ESTABLISHED:::

@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { CyberpunkLogo } from "./cyber-logo/cyber-logo";
 import { orbitron } from "@/app/fonts";
 
@@ -8,13 +8,13 @@ const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
 
-  const handleScroll = () => {
-    if (window.scrollY > 100) {
-      setScrolled(true);
+  const handleScroll = useCallback(() => {
+    if (window.scrollY > 10) {
+      !scrolled && setScrolled(true); // eslint-disable-line @typescript-eslint/no-unused-expressions
     } else {
-      setScrolled(false);
+      scrolled && setScrolled(false); // eslint-disable-line @typescript-eslint/no-unused-expressions
     }
-  };
+  }, [scrolled]);
 
   const toggleMenu = () => {
     setMenuOpen((prev) => !prev);
@@ -23,7 +23,7 @@ const Navbar = () => {
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [handleScroll]);
 
   // based on hash change, set the active section
   useEffect(() => {

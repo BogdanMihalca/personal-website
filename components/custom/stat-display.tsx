@@ -101,14 +101,14 @@ const StatsDisplay = ({
                   isLoading ? "bg-neon-yellow animate-pulse" : "bg-neon-green"
                 )}
               />
-              <span className="text-xs text-gray-400 font-mono">
+              <span className="text-xs text-gray-400  ">
                 {isLoading ? "SYNCING" : "LIVE"}
               </span>
             </div>
           </div>
 
           {lastUpdated && (
-            <div className="text-xs text-gray-500 font-mono">
+            <div className="text-xs text-gray-500  ">
               Last updated: {lastUpdated.toLocaleTimeString()}
             </div>
           )}
@@ -137,7 +137,7 @@ const StatsDisplay = ({
                       className="space-y-1"
                     >
                       <div className="flex justify-between items-center">
-                        <div className="text-sm text-gray-300 font-mono">
+                        <div className="text-sm text-gray-300  ">
                           {stat.label}
                         </div>
                         <div

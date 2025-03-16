@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @plugin 'tailwindcss-animate';
 
@@ -53,8 +53,10 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
 
-  --background-image-space-grid:
-    repeating-linear-gradient(#222222 0 1px, transparent 1px 40px),
+  --background-image-space-grid: repeating-linear-gradient(
+      #222222 0 1px,
+      transparent 1px 40px
+    ),
     repeating-linear-gradient(90deg, #222222 0 1px, transparent 1px 40px);
   --background-image-space-gradient: radial-gradient(
     ellipse at top,
@@ -63,15 +65,14 @@
   );
   --background-image-starfield: radial-gradient(
     ellipse at center,
-    theme('colors.neon.cyan/0.1') 0%,
+    theme("colors.neon.cyan/0.1") 0%,
     transparent 70%
   );
   --background-image-scanline: linear-gradient(
     transparent 50%,
     rgba(0, 0, 0, 0.5) 50%
   );
-  --background-image-neon-grid:
-    repeating-linear-gradient(
+  --background-image-neon-grid: repeating-linear-gradient(
       90deg,
       var(--color-neon-cyan) 0 1px,
       transparent 1px 40px
@@ -83,14 +84,6 @@
     );
 }
 
-/*
-  The default border color has changed to `currentColor` in Tailwind CSS v4,
-  so we've added these compatibility styles to make sure everything still
-  looks the same as it did with Tailwind CSS v3.
-
-  If we ever want to remove these styles, we need to add an explicit border
-  color utility to any element that depends on these defaults.
-*/
 @layer base {
   *,
   ::after,
@@ -230,5 +223,35 @@
   }
   100% {
     background-position: 0% 50%;
+  }
+}
+
+.bg-scanline {
+  background: linear-gradient(
+    to bottom,
+    transparent 50%,
+    rgba(0, 0, 0, 0.5) 50%
+  );
+  background-size: 100% 4px;
+}
+
+.animate-spin-slow {
+  animation: spin 3s linear infinite;
+}
+
+.animate-typing {
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 2px solid rgba(127, 17, 224, 0.7);
+  width: 0;
+  animation: typing 2s steps(30, end) forwards;
+}
+
+@keyframes typing {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
   }
 }

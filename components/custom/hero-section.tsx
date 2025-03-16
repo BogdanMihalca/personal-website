@@ -1,10 +1,18 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Code, Terminal, Zap, Camera, Layers, Video } from "lucide-react";
+import {
+  Code,
+  Terminal,
+  Zap,
+  Camera,
+  Layers,
+  Video,
+  Phone,
+} from "lucide-react";
 import { FloatingCube } from "./floating-cube";
 import { CyberTerminal } from "./cyber-terminal";
+import { CyberpunkButton } from "./cyber-button";
 
 const CyberpunkHero = () => {
   const [glitchEffect, setGlitchEffect] = useState(false);
@@ -52,7 +60,7 @@ const CyberpunkHero = () => {
         >
           <div className="relative mb-6 inline-block">
             <div className="absolute inset-0 bg-linear-to-r from-cyan-500 via-fuchsia-500 to-cyan-500 rounded p-px animate-gradient-x"></div>
-            <Badge className="relative bg-black/80 text-cyan-400 backdrop-blur-xs py-2 px-3 border-0 text-sm font-mono">
+            <Badge className="relative bg-black/80 text-cyan-400 backdrop-blur-xs py-2 px-3 border-0 text-sm  ">
               <Terminal className="mr-2 h-3 w-3 text-fuchsia-500" /> MBC _v1.0
             </Badge>
           </div>
@@ -71,7 +79,7 @@ const CyberpunkHero = () => {
               BOGDAN MIHALCA
             </span>
             <br />
-            <span className="text-3xl md:text-4xl font-light tracking-widest text-gray-200 font-mono relative">
+            <span className="text-3xl md:text-4xl font-light tracking-widest text-gray-200   relative">
               SOFTWARE ENGINEER
               <span className="absolute -right-8 top-0 text-lime-500 animate-ping">
                 _
@@ -82,24 +90,16 @@ const CyberpunkHero = () => {
           <CyberTerminal />
 
           <div className="flex flex-wrap gap-4 mt-8">
-            <Button
-              size="lg"
-              className="bg-linear-to-r from-cyan-600 to-fuchsia-600 hover:from-cyan-500 hover:to-fuchsia-500 text-white border-0 relative overflow-hidden group"
+            <CyberpunkButton size="md" icon={<Code className="w-4 h-4 mr-2" />}>
+              View Portfolio
+            </CyberpunkButton>
+            <CyberpunkButton
+              size="md"
+              variant="secondary"
+              icon={<Phone className="w-4 h-4 mr-2" />}
             >
-              <span className="absolute inset-0 w-full h-full bg-linear-to-r from-cyan-600/0 via-white/10 to-cyan-600/0 transform -translate-x-full group-hover:translate-x-full transition-transform duration-700"></span>
-              <span className="relative flex items-center">
-                JACK IN <Zap className="ml-2 h-4 w-4" />
-              </span>
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="border border-cyan-500/50 text-cyan-400 hover:bg-cyan-950/50 relative group"
-            >
-              <span className="absolute inset-0 w-1/2 h-px bg-linear-to-r from-transparent via-cyan-400 to-transparent -translate-x-full group-hover:translate-x-full transition-all duration-700"></span>
-              <span className="absolute inset-0 w-1/2 h-px bottom-0 bg-linear-to-r from-transparent via-fuchsia-400 to-transparent -translate-x-full group-hover:translate-x-full transition-all duration-700 delay-100"></span>
-              <Code className="mr-2 h-4 w-4 text-fuchsia-400" /> ACCESS SOURCE
-            </Button>
+              Contact
+            </CyberpunkButton>
           </div>
 
           <div className="mt-8 p-0.5 relative">
