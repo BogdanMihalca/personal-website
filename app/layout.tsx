@@ -1,16 +1,11 @@
+import { Navbar } from "@/components/custom/navbar";
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { audiowide } from "./fonts";
 import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { EnergyMouseField } from "@/components/custom/energy-mouse-field";
+import { AnimatedStars } from "@/components/custom/animated-stars";
+import { Terminal } from "@/components/custom/terminal";
 
 export const metadata: Metadata = {
   title: "Bogdan Mihalca",
@@ -23,11 +18,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
+    <html lang="en" className={`${audiowide.variable} ${audiowide.className}`}>
+      <body>
+        <div className="min-h-screen bg-black text-gray-100 relative overflow-x-hidden pt-10 lg:pt-0">
+          <div className="fixed inset-0 bg-space-grid opacity-20 z-0" />
+          <EnergyMouseField />
+          <AnimatedStars />
+          <Navbar />
+          <ScrollArea>{children}</ScrollArea>
+          <Terminal />
+        </div>
       </body>
     </html>
   );

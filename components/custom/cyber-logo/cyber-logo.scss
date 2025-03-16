@@ -1,0 +1,191 @@
+.logo-glitch {
+  display: inline-block;
+  position: relative;
+  overflow: hidden; /* Prevent glitch from spilling outside */
+
+  /* Base span styling */
+  span {
+    display: inline-block;
+  }
+
+  /* Shared properties for glitch layers */
+  &-1,
+  &-2,
+  &-3 {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  /* First glitch layer - top section */
+  &-1 {
+    clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
+    transform: translate(-2px, 2px);
+    animation: glitch-anim-1 4s infinite cubic-bezier(0.25, 0.46, 0.45, 0.94)
+      alternate-reverse;
+    mix-blend-mode: difference; /* Creates interesting color interactions */
+    opacity: 0.8;
+  }
+
+  /* Second glitch layer - bottom section */
+  &-2 {
+    clip-path: polygon(0 60%, 100% 60%, 100% 100%, 0 100%);
+    transform: translate(2px, -2px);
+    animation: glitch-anim-2 3s infinite cubic-bezier(0.36, 0.07, 0.19, 0.97)
+      alternate-reverse;
+    mix-blend-mode: hard-light; /* Different blend mode for variety */
+    opacity: 0.85;
+  }
+
+  /* New middle glitch layer */
+  &-3 {
+    clip-path: polygon(0 45%, 100% 45%, 100% 60%, 0 60%);
+    transform: translate(-1px, 1px) scale(1.02);
+    animation: glitch-anim-3 5s infinite cubic-bezier(0.42, 0, 0.58, 1)
+      alternate-reverse;
+    mix-blend-mode: overlay; /* Third blend mode for more depth */
+    opacity: 0.75;
+    filter: hue-rotate(10deg); /* Subtle color shifting */
+  }
+
+  /* Add subtle background flash on hover */
+  &:hover::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    animation: flash-anim 0.2s forwards;
+  }
+}
+
+/* More dynamic first glitch animation with variable heights */
+@keyframes glitch-anim-1 {
+  0% {
+    clip-path: polygon(0 2%, 100% 2%, 100% 5%, 0 5%);
+    transform: translate(-2px, 2px);
+  }
+  20% {
+    clip-path: polygon(0 15%, 100% 15%, 100% 25%, 0 25%);
+    transform: translate(-1.5px, 1.5px) skewX(1deg);
+  }
+  40% {
+    clip-path: polygon(0 10%, 100% 10%, 100% 20%, 0 20%);
+    transform: translate(-3px, 1px) skewY(0.5deg);
+  }
+  60% {
+    clip-path: polygon(0 1%, 100% 1%, 100% 15%, 0 15%);
+    transform: translate(-1px, 2px);
+  }
+  80% {
+    clip-path: polygon(0 33%, 100% 33%, 100% 44%, 0 44%);
+    transform: translate(-2.5px, 1px) skewX(-0.5deg);
+  }
+  100% {
+    clip-path: polygon(0 44%, 100% 44%, 100% 54%, 0 54%);
+    transform: translate(-2px, 1.5px);
+  }
+}
+
+/* Improved second glitch animation */
+@keyframes glitch-anim-2 {
+  0% {
+    clip-path: polygon(0 70%, 100% 70%, 100% 73%, 0 73%);
+    transform: translate(2px, -2px);
+  }
+  20% {
+    clip-path: polygon(0 80%, 100% 80%, 100% 90%, 0 90%);
+    transform: translate(1.5px, -1.5px) skewX(-1deg);
+  }
+  40% {
+    clip-path: polygon(0 85%, 100% 85%, 100% 95%, 0 95%);
+    transform: translate(3px, -1px) skewY(-0.5deg);
+  }
+  60% {
+    clip-path: polygon(0 95%, 100% 95%, 100% 100%, 0 100%);
+    transform: translate(1px, -2px);
+  }
+  80% {
+    clip-path: polygon(0 75%, 100% 75%, 100% 85%, 0 85%);
+    transform: translate(2.5px, -1px) skewX(0.5deg);
+  }
+  100% {
+    clip-path: polygon(0 65%, 100% 65%, 100% 75%, 0 75%);
+    transform: translate(2px, -1.5px);
+  }
+}
+
+/* New middle section animation */
+@keyframes glitch-anim-3 {
+  0% {
+    clip-path: polygon(0 45%, 100% 45%, 100% 50%, 0 50%);
+    transform: translate(1px, -1px);
+    opacity: 0.7;
+  }
+  25% {
+    clip-path: polygon(0 48%, 100% 48%, 100% 58%, 0 58%);
+    transform: translate(-1px, 1px) scaleX(1.01);
+    opacity: 0.8;
+  }
+  50% {
+    clip-path: polygon(0 46%, 100% 46%, 100% 55%, 0 55%);
+    transform: translate(1px, 1px) skewX(1deg);
+    opacity: 0.7;
+  }
+  75% {
+    clip-path: polygon(0 50%, 100% 50%, 100% 60%, 0 60%);
+    transform: translate(-1px, -1px) scaleX(0.99);
+    opacity: 0.8;
+  }
+  100% {
+    clip-path: polygon(0 47%, 100% 47%, 100% 53%, 0 53%);
+    transform: translate(1px, -1px);
+    opacity: 0.75;
+  }
+}
+
+/* Quick flash animation for hover effect */
+@keyframes flash-anim {
+  0% {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Add media query for reduced motion preference */
+@media (prefers-reduced-motion) {
+  .logo-glitch {
+    &-1,
+    &-2,
+    &-3 {
+      animation-duration: 8s; /* Slower animations */
+      animation-timing-function: ease-in-out;
+    }
+  }
+}
+
+/* Optional color effects - uncommenting these adds RGB splitting effects */
+
+.logo-glitch {
+  &-1 {
+    filter: hue-rotate(-10deg) saturate(1.5);
+  }
+
+  &-2 {
+    filter: hue-rotate(10deg) saturate(1.2);
+  }
+
+  &-3 {
+    filter: hue-rotate(5deg) contrast(1.1);
+  }
+}
