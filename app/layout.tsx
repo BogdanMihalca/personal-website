@@ -38,7 +38,7 @@ export default function RootLayout({
             position="right"
             verticalPosition="top"
             verticalOffset={100}
-            collapsedSize={50}
+            collapsedSize={40}
             width={420}
           >
             <CyberpunkWeather />
@@ -49,8 +49,8 @@ export default function RootLayout({
             theme="cyber"
             position="right"
             verticalPosition="top"
-            verticalOffset={170}
-            collapsedSize={50}
+            verticalOffset={150}
+            collapsedSize={40}
             width={420}
           >
             <MoonPhase />

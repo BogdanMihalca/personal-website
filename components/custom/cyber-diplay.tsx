@@ -3,29 +3,26 @@ import { useState, useEffect, FC, ReactElement } from "react";
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 
-const CyberpunkDisplay: FC<{ title: string; children: ReactElement }> = ({
-  title = "SYSTEM_BREACH",
-  children,
-}) => {
+const CyberpunkDisplay: FC<{
+  title: string;
+  children: ReactElement;
+  className?: string;
+}> = ({ title = "SYSTEM_BREACH", children, className = "" }) => {
   const [glitchActive, setGlitchActive] = useState(false);
   const [hardGlitch, setHardGlitch] = useState(false);
   const [headerGlitch, setHeaderGlitch] = useState(false);
 
-  // Trigger various glitch effects with different timings
   useEffect(() => {
-    // Small title glitches - frequent
     const minorGlitchInterval = setInterval(() => {
       setGlitchActive(true);
       setTimeout(() => setGlitchActive(false), 100 + Math.random() * 200);
     }, 800 + Math.random() * 1200);
 
-    // Major glitches - less frequent
     const majorGlitchInterval = setInterval(() => {
       setHardGlitch(true);
       setTimeout(() => setHardGlitch(false), 250);
     }, 4000 + Math.random() * 3000);
 
-    // Header bar glitches
     const headerGlitchInterval = setInterval(() => {
       setHeaderGlitch(true);
       setTimeout(() => setHeaderGlitch(false), 150);
@@ -38,7 +35,6 @@ const CyberpunkDisplay: FC<{ title: string; children: ReactElement }> = ({
     };
   }, []);
 
-  // Generate random hex data
   const generateHexLine = (length: number) => {
     return Array.from({ length })
       .map(() =>
@@ -50,7 +46,7 @@ const CyberpunkDisplay: FC<{ title: string; children: ReactElement }> = ({
   };
 
   return (
-    <div className="relative w-[300px]">
+    <div className={`relative ${className}`}>
       <div
         className="absolute inset-0 z-0"
         style={{

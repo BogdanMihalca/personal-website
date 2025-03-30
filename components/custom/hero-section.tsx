@@ -27,7 +27,7 @@ const CyberpunkHero = () => {
   }, []);
 
   return (
-    <div className="relative min-h-screen overflow-hidden">
+    <section className="relative min-h-screen overflow-hidden" id="home">
       <div className="absolute inset-0 z-0 opacity-40">
         <div className="absolute h-px w-full top-1/3 bg-linear-to-r from-transparent via-fuchsia-600 to-transparent animate-pulse" />
         <div
@@ -185,7 +185,7 @@ const CyberpunkHero = () => {
           ></div>
         </div>
       )}
-    </div>
+    </section>
   );
 };
 

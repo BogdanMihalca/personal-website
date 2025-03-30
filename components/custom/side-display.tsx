@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 import { GlitchText } from "./glitch-text";
+import { ArrowRightCircle } from "lucide-react";
 
 interface CyberSidePanelProps {
   icon: React.ReactNode;
@@ -28,7 +29,7 @@ export const SideDisplay = ({
   verticalPosition = "center",
   verticalOffset = 0,
   width = 320,
-  collapsedSize = 60,
+  collapsedSize = 50,
   theme = "cyber",
   onExpandChange,
 }: CyberSidePanelProps) => {
@@ -43,7 +44,6 @@ export const SideDisplay = ({
     }
   };
 
-  // Calculate vertical position based on props
   const getVerticalPositionClass = () => {
     switch (verticalPosition) {
       case "top":
@@ -80,7 +80,7 @@ export const SideDisplay = ({
           panel:
             "bg-indigo-950/80 backdrop-blur-md border-2 border-violet-500/50 shadow-[0_0_15px_rgba(124,58,237,0.5)]",
           button:
-            "bg-indigo-900 border border-violet-500/50 text-violet-300 hover:text-violet-200 shadow-[0_0_8px_rgba(124,58,237,0.5)]",
+            "bg-indigo-900 border text-violet-300 hover:text-violet-200 shadow-[0_0_8px_rgba(124,58,237,0.5)]",
           title: "text-violet-300 border-b border-violet-500/30",
           content: "text-violet-200/90",
         };
@@ -90,7 +90,7 @@ export const SideDisplay = ({
           panel:
             "bg-space-black/80 backdrop-blur-md border-l-2 border-t-2 border-b-2 border-neon-cyan/50 shadow-[0_0_15px_rgba(0,255,255,0.5)]",
           button:
-            "bg-space-black border border-neon-pink/50 text-neon-cyan hover:text-neon-pink shadow-[0_0_8px_rgba(255,0,255,0.5)] before:content-[''] before:absolute before:inset-0 before:border before:border-neon-cyan/30 before:clip-path-[polygon(10%_0,_90%_0,_100%_30%,_100%_70%,_90%_100%,_10%_100%,_0_70%,_0_30%)] hover:before:border-neon-pink/50",
+            "bg-space-black border border-none  text-neon-cyan hover:text-neon-pink shadow-[0_0_8px_rgba(255,0,255,0.5)] ",
           title: "text-neon-pink border-b border-neon-cyan/30",
           content: "text-neon-cyan/90",
         };
@@ -169,7 +169,7 @@ export const SideDisplay = ({
               "right-1/2 translate-x-1/2",
               "left-1/2 -translate-x-1/2",
               "top-1/2 -translate-y-1/2",
-              "w-10 h-10 flex items-center justify-center",
+              "w-8 h-8 flex items-center justify-center",
               themeStyles.button,
               "transition-all duration-300",
               "z-10",
@@ -198,7 +198,7 @@ export const SideDisplay = ({
                 className={cn(
                   "space-y-4",
                   themeStyles.content,
-                  "max-h-96 overflow-y-auto md:max-h-none"
+                  "max-h-[500px] overflow-y-auto md:max-h-none"
                 )}
               >
                 {children}
@@ -207,6 +207,21 @@ export const SideDisplay = ({
           )}
         </AnimatePresence>
 
+        {/* close button to right */}
+        {isExpanded && (
+          <button
+            className={cn(
+              "absolute top-2 right-2 w-6 h-6 flex items-center justify-center",
+              "text-neon-pink hover:text-white transition-colors",
+              "cursor-pointer z-10"
+            )}
+            onClick={toggleExpand}
+            aria-label="Close panel"
+          >
+            <ArrowRightCircle />
+          </button>
+        )}
+
         {theme === "cyber" && (
           <>
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-neon-cyan/0 via-neon-cyan/70 to-neon-cyan/0"></div>
@@ -214,7 +229,7 @@ export const SideDisplay = ({
             <div
               className="absolute top-2 left-2 w-2 h-2 bg-neon-pink rounded-full shadow-[0_0_5px_rgba(255,0,255,0.8)] cursor-pointer"
               onClick={toggleExpand}
-            ></div>
+            />
           </>
         )}
       </div>

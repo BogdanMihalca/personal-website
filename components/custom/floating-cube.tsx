@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 
 const FloatingCube = () => {
   return (
-    <div className="hidden lg:block absolute bottom-80 right-80 z-0 opacity-90">
+    <div className="hidden lg:block absolute bottom-[40%] right-[25%] z-0 opacity-90">
       <motion.div
         animate={{
           rotateY: [0, 180, 360],
@@ -10,7 +10,7 @@ const FloatingCube = () => {
           rotateZ: [0, 180, 360],
         }}
         transition={{
-          duration: 10,
+          duration: 20,
           repeat: Infinity,
           ease: "linear",
         }}

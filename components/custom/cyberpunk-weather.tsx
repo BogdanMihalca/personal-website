@@ -1,29 +1,29 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import {
-  Wind,
-  Droplets,
-  Sun,
-  Cloud,
-  CloudFog,
-  CloudSnow,
-  CloudLightning,
-  Thermometer,
-  Search,
-  MapPin,
-} from "lucide-react";
-import { Progress } from "@/components/ui/progress";
+import { RainEffect } from "@/components/custom/rain-effect";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { RainEffect } from "@/components/custom/rain-effect";
+import { Progress } from "@/components/ui/progress";
+import { motion } from "framer-motion";
+import {
+  Cloud,
+  CloudFog,
+  CloudLightning,
+  CloudSnow,
+  Droplets,
+  MapPin,
+  Search,
+  Sun,
+  Thermometer,
+  Wind,
+} from "lucide-react";
+import { useEffect, useState } from "react";
 import { CyberpunkButton } from "./cyber-button";
 
 const CyberpunkWeather = ({ defaultCity = "Oradea" }) => {
   const [city, setCity] = useState(defaultCity);
   const [inputCity, setInputCity] = useState("");
-  const [weather, setWeather] = useState<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
+  const [weather, setWeather] = useState<any>(); // eslint-disable-line @typescript-eslint/no-explicit-any
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>("");
   const [showRainEffect, setShowRainEffect] = useState(false);
@@ -111,7 +111,6 @@ const CyberpunkWeather = ({ defaultCity = "Oradea" }) => {
     fetchWeather();
   }, [city]);
 
-  // Weather icon mapping
   const getWeatherIcon = (weatherCode: string) => {
     const code = weatherCode?.toLowerCase() || "";
 
@@ -130,7 +129,6 @@ const CyberpunkWeather = ({ defaultCity = "Oradea" }) => {
     return <Thermometer className="text-red-400" size={36} />;
   };
 
-  // Neon color based on temperature
   const getNeonColor = (temp: number) => {
     if (temp < 0) return "from-blue-500 to-purple-600";
     if (temp < 10) return "from-cyan-500 to-blue-600";
@@ -187,7 +185,7 @@ const CyberpunkWeather = ({ defaultCity = "Oradea" }) => {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="w-full h-full  backdrop-blur-sm rounded-lg overflow-hidden relative"
+      className="w-full h-full backdrop-blur-sm rounded-lg overflow-hidden relative"
     >
       {showRainEffect && (
         <RainEffect
@@ -232,11 +230,8 @@ const CyberpunkWeather = ({ defaultCity = "Oradea" }) => {
         </form>
       </div>
 
-      {/* Grid Layout */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-2 p-3 h-full">
-        {/* Left Panel - Main Weather */}
         <div className="flex flex-col space-y-2">
-          {/* City Name with Typing Effect */}
           <motion.div
             className="flex items-center space-x-2"
             initial={{ x: -20 }}
@@ -253,7 +248,6 @@ const CyberpunkWeather = ({ defaultCity = "Oradea" }) => {
             </motion.h2>
           </motion.div>
 
-          {/* Temperature Display */}
           <div className="flex items-center space-x-4 bg-black bg-opacity-40 p-3 rounded-md border border-gray-800">
             {getWeatherIcon(weather.weather[0].main)}
             <div className="flex items-end">
@@ -269,7 +263,6 @@ const CyberpunkWeather = ({ defaultCity = "Oradea" }) => {
             </div>
           </div>
 
-          {/* Weather Description */}
           <div className="bg-gray-900 bg-opacity-60 p-3 rounded border border-gray-800">
             <div className="flex items-center">
               <div className="w-1 h-1 rounded-full bg-cyan-500 mr-2 animate-pulse"></div>
@@ -279,7 +272,6 @@ const CyberpunkWeather = ({ defaultCity = "Oradea" }) => {
             </div>
           </div>
 
-          {/* Digital Frame */}
           <motion.div
             className="border border-blue-800 p-3 rounded-md bg-black bg-opacity-60 flex-grow flex flex-col justify-between"
             whileHover={{ boxShadow: "0 0 8px rgba(59, 130, 246, 0.6)" }}
@@ -305,9 +297,7 @@ const CyberpunkWeather = ({ defaultCity = "Oradea" }) => {
           </motion.div>
         </div>
 
-        {/* Right Panel - Details */}
         <div className="flex flex-col space-y-2">
-          {/* Status Bar */}
           <div className="flex items-center justify-between bg-black bg-opacity-60 p-2 rounded border border-gray-800">
             <div className="flex items-center space-x-1">
               <div className="w-1 h-1 rounded-full bg-green-500 animate-pulse"></div>
@@ -316,7 +306,6 @@ const CyberpunkWeather = ({ defaultCity = "Oradea" }) => {
             <span className="text-blue-300   text-xs">WTR-OS v1.3.7</span>
           </div>
 
-          {/* Humidity */}
           <Card className="bg-gray-900 bg-opacity-70 border-blue-900 p-2">
             <div className="flex justify-between items-center mb-1">
               <div className="flex items-center">
@@ -338,7 +327,6 @@ const CyberpunkWeather = ({ defaultCity = "Oradea" }) => {
             </Progress>
           </Card>
 
-          {/* Wind Speed */}
           <Card className="bg-gray-900 bg-opacity-70 border-blue-900 p-2">
             <div className="flex justify-between items-center mb-1">
               <div className="flex items-center">
@@ -398,7 +386,6 @@ const CyberpunkWeather = ({ defaultCity = "Oradea" }) => {
         </div>
       </div>
 
-      {/* Bottom Cyberpunk Highlight */}
       <div className="relative h-2 w-full overflow-hidden">
         <motion.div
           className={`h-full w-full bg-gradient-to-r ${tempNeonColor}`}
