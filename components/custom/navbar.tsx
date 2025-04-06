@@ -4,12 +4,15 @@ import { CyberpunkLogo } from "./cyber-logo/cyber-logo";
 import { orbitron } from "@/app/fonts";
 import { useHash } from "@/lib/hooks/useHash";
 import { scrollToSection } from "@/lib/utils";
+import { usePerformanceMode } from "@/lib/contexts/performance-mode";
+import { Battery, BatteryCharging } from "lucide-react";
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
   const hash = useHash();
+  const { reducedAnimations, togglePerformanceMode } = usePerformanceMode();
 
   const handleScroll = useCallback(() => {
     if (window.scrollY > 10) {
@@ -46,7 +49,7 @@ const Navbar = () => {
       }`}
     >
       <div className="container mx-auto px-4 py-4">
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center relative">
           <div className="flex items-center">
             <CyberpunkLogo
               name="Bogdan Mihalca"
@@ -54,7 +57,7 @@ const Navbar = () => {
             />
           </div>
 
-          <div className="hidden md:flex space-x-8">
+          <div className="hidden md:flex space-x-8 mr-12">
             {["home", "about", "projects", "contact"].map((section) => (
               <a
                 key={section}
@@ -70,7 +73,7 @@ const Navbar = () => {
             ))}
           </div>
 
-          <div className="md:hidden">
+          <div className="md:hidden flex items-center">
             <button
               onClick={toggleMenu}
               className="text-gray-300 hover:text-cyan-400 focus:outline-hidden"
@@ -96,6 +99,26 @@ const Navbar = () => {
               </div>
             </button>
           </div>
+
+          <button
+            onClick={togglePerformanceMode}
+            className={`fixed z-50  right-4 p-2 rounded-full transition-all duration-300 cursor-pointer hidden md:block ${
+              reducedAnimations
+                ? "bg-gray-800 text-green-400"
+                : "bg-black/50 text-cyan-400"
+            }`}
+            title={
+              reducedAnimations
+                ? "Enable full animations"
+                : "Enable power saving mode"
+            }
+          >
+            {reducedAnimations ? (
+              <BatteryCharging size={20} className="animate-pulse" />
+            ) : (
+              <Battery size={20} />
+            )}
+          </button>
         </div>
       </div>
 

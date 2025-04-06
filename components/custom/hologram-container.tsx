@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { usePerformanceMode } from "@/lib/contexts/performance-mode";
 
 type HologramVariant = "neon" | "holo" | "glitch";
 
@@ -20,15 +21,23 @@ export const HologramContainer = ({
   intensity = "medium",
   interactive = true,
 }: HologramContainerProps) => {
+  const { reducedAnimations } = usePerformanceMode();
   const [isHovering, setIsHovering] = useState(false);
   const [glitchTiming, setGlitchTiming] = useState(0);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
+  // Adjust intensity based on performance mode
+  const effectiveIntensity = reducedAnimations ? "low" : intensity;
+
+  // Adjust interactivity based on performance mode
+  const effectiveInteractive = reducedAnimations ? false : interactive;
+
   useEffect(() => {
+    // If reduced animations, use longer intervals for glitch effect
     const intervalTime =
-      intensity === "high"
+      effectiveIntensity === "high"
         ? 2000 + Math.random() * 2000
-        : intensity === "medium"
+        : effectiveIntensity === "medium"
         ? 4000 + Math.random() * 3000
         : 8000 + Math.random() * 4000;
 
@@ -37,10 +46,10 @@ export const HologramContainer = ({
     }, intervalTime);
 
     return () => clearInterval(interval);
-  }, [intensity]);
+  }, [effectiveIntensity]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!interactive) return;
+    if (!effectiveInteractive) return;
 
     const rect = e.currentTarget.getBoundingClientRect();
     const x = (e.clientX - rect.left) / rect.width;
@@ -61,23 +70,26 @@ export const HologramContainer = ({
         },
         className
       )}
-      onMouseEnter={() => interactive && setIsHovering(true)}
-      onMouseLeave={() => interactive && setIsHovering(false)}
+      onMouseEnter={() => effectiveInteractive && setIsHovering(true)}
+      onMouseLeave={() => effectiveInteractive && setIsHovering(false)}
       onMouseMove={handleMouseMove}
       animate={{
-        boxShadow: isHovering
-          ? variant === "neon"
-            ? "0 0 15px 2px rgba(15, 239, 253, 0.3)"
-            : variant === "holo"
-            ? "0 0 15px 2px rgba(176, 38, 255, 0.3)"
-            : "0 0 15px 2px rgba(255, 45, 108, 0.3)"
-          : "0 0 0px 0px rgba(0, 0, 0, 0)",
+        boxShadow:
+          isHovering && !reducedAnimations
+            ? variant === "neon"
+              ? "0 0 15px 2px rgba(15, 239, 253, 0.3)"
+              : variant === "holo"
+              ? "0 0 15px 2px rgba(176, 38, 255, 0.3)"
+              : "0 0 15px 2px rgba(255, 45, 108, 0.3)"
+            : "0 0 0px 0px rgba(0, 0, 0, 0)",
       }}
     >
-      <div
-        className="absolute inset-0 pointer-events-none bg-scanline opacity-10 z-10"
-        aria-hidden="true"
-      />
+      {!reducedAnimations && (
+        <div
+          className="absolute inset-0 pointer-events-none bg-scanline opacity-10 z-10"
+          aria-hidden="true"
+        />
+      )}
 
       <div
         className={cn("absolute inset-0 opacity-20 z-0", {
@@ -89,46 +101,50 @@ export const HologramContainer = ({
             variant === "glitch",
         })}
         style={{
-          transform: interactive
-            ? `translate(${(mousePosition.x - 0.5) * 10}px, ${
-                (mousePosition.y - 0.5) * 10
-              }px)`
+          transform: effectiveInteractive
+            ? `translate(${
+                (mousePosition.x - 0.5) * (reducedAnimations ? 5 : 10)
+              }px, ${(mousePosition.y - 0.5) * (reducedAnimations ? 5 : 10)}px)`
             : "none",
         }}
       />
 
-      <motion.div
-        className="absolute inset-0 z-20 pointer-events-none mix-blend-screen"
-        animate={{
-          opacity: [0, 0.05, 0],
-          x: [-2, 1, 0],
-          y: [1, -1, 0],
-        }}
-        transition={{
-          duration: 0.2,
-          ease: "easeInOut",
-          repeat: 1,
-          repeatType: "reverse",
-          repeatDelay: 0.1,
-        }}
-        key={glitchTiming}
-      >
-        <div
-          className={cn("w-full h-full", {
-            "bg-neon-cyan": variant === "neon",
-            "bg-neon-purple": variant === "holo",
-            "bg-neon-pink": variant === "glitch",
-          })}
-        />
-      </motion.div>
+      {!reducedAnimations && (
+        <motion.div
+          className="absolute inset-0 z-20 pointer-events-none mix-blend-screen"
+          animate={{
+            opacity: [0, 0.05, 0],
+            x: [-2, 1, 0],
+            y: [1, -1, 0],
+          }}
+          transition={{
+            duration: 0.2,
+            ease: "easeInOut",
+            repeat: 1,
+            repeatType: "reverse",
+            repeatDelay: 0.1,
+          }}
+          key={glitchTiming}
+        >
+          <div
+            className={cn("w-full h-full", {
+              "bg-neon-cyan": variant === "neon",
+              "bg-neon-purple": variant === "holo",
+              "bg-neon-pink": variant === "glitch",
+            })}
+          />
+        </motion.div>
+      )}
 
       <motion.div
         className="relative z-10"
         style={{
           transform:
-            interactive && isHovering
-              ? `translate(${(mousePosition.x - 0.5) * -5}px, ${
-                  (mousePosition.y - 0.5) * -5
+            effectiveInteractive && isHovering
+              ? `translate(${
+                  (mousePosition.x - 0.5) * (reducedAnimations ? -2 : -5)
+                }px, ${
+                  (mousePosition.y - 0.5) * (reducedAnimations ? -2 : -5)
                 }px)`
               : "none",
         }}

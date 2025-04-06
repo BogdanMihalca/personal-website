@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { usePerformanceMode } from "@/lib/contexts/performance-mode";
 
 type GlitchTextOptions = {
   text: string;
@@ -79,6 +80,7 @@ const useGlitchText = (options: GlitchTextOptions) => {
     glitchDuration = 150,
   } = options;
 
+  const { reducedAnimations } = usePerformanceMode();
   const [displayText, setDisplayText] = useState<string>(text);
   const [isRunning, setIsRunning] = useState<boolean>(true);
   const originalText = useRef<string>(text);
@@ -125,6 +127,17 @@ const useGlitchText = (options: GlitchTextOptions) => {
     }, glitchDuration);
   }, [corruptText, glitchProbability, glitchDuration]);
 
+  // Internal function to clear the interval
+  const clearGlitchInterval = useCallback(() => {
+    if (intervalRef.current !== null) {
+      window.clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+    // Reset to original text
+    setDisplayText(originalText.current);
+    isGlitching.current = false;
+  }, []);
+
   // Start the glitch effect
   const start = useCallback(() => {
     if (intervalRef.current !== null) return;
@@ -135,19 +148,13 @@ const useGlitchText = (options: GlitchTextOptions) => {
 
   // Stop the glitch effect
   const stop = useCallback(() => {
-    if (intervalRef.current !== null) {
-      window.clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    }
-    // Reset to original text when stopping
-    setDisplayText(originalText.current);
-    isGlitching.current = false;
+    clearGlitchInterval();
     setIsRunning(false);
-  }, []);
+  }, [clearGlitchInterval]);
 
   // Force a glitch now
   const glitchNow = useCallback(() => {
-    if (!isGlitching.current) {
+    if (!isGlitching.current && !reducedAnimations) {
       isGlitching.current = true;
       const corruptedText = corruptText(originalText.current);
       setDisplayText(corruptedText);
@@ -157,25 +164,30 @@ const useGlitchText = (options: GlitchTextOptions) => {
         isGlitching.current = false;
       }, glitchDuration);
     }
-  }, [corruptText, glitchDuration]);
+  }, [corruptText, glitchDuration, reducedAnimations]);
 
   // Set up and clean up the interval
   useEffect(() => {
-    if (isRunning) {
-      start();
+    // Don't run the glitching effect if reduced animations is enabled
+    if (reducedAnimations) {
+      clearGlitchInterval();
+      setIsRunning(false);
+      return;
     }
 
-    return () => {
-      if (intervalRef.current !== null) {
-        window.clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-    };
-  }, [isRunning, start]);
+    if (isRunning) {
+      start();
+    } else {
+      clearGlitchInterval();
+    }
 
+    return clearGlitchInterval;
+  }, [isRunning, start, clearGlitchInterval, reducedAnimations]);
+
+  // If reducedAnimations is enabled, always return the original text
   return {
-    text: displayText,
-    isRunning,
+    text: reducedAnimations ? originalText.current : displayText,
+    isRunning: reducedAnimations ? false : isRunning,
     start,
     stop,
     glitchNow,

@@ -10,10 +10,13 @@ import type { Metadata } from "next";
 import { audiowide } from "./fonts";
 import "./globals.css";
 import { MoonPhase } from "@/components/custom/moon-phase";
+import { PerformanceProvider } from "@/lib/contexts/performance-mode";
+import { Footer } from "@/components/custom/footer";
 
 export const metadata: Metadata = {
-  title: "Bogdan Mihalca",
-  description: "Software Engineer, Web Developer, and Content Creator",
+  title: "Bogdan Mihalca | Personal Website",
+  description:
+    "Cyberpunk-themed portfolio showcasing my work and skills in web development",
 };
 
 export default function RootLayout({
@@ -24,38 +27,41 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${audiowide.variable} ${audiowide.className}`}>
       <body>
-        <div className="min-h-screen bg-black text-gray-100 relative overflow-x-hidden pt-10 lg:pt-0">
-          <div className="fixed inset-0 bg-space-grid opacity-20 z-0" />
-          <EnergyMouseField />
-          <AnimatedStars />
-          <Navbar />
-          <ScrollArea>{children}</ScrollArea>
-          <Terminal />
-          <SideDisplay
-            icon={<SunMoon width={30} height={30} />}
-            title="WEATHER CONTROL"
-            theme="cyber"
-            position="right"
-            verticalPosition="top"
-            verticalOffset={100}
-            collapsedSize={40}
-            width={420}
-          >
-            <CyberpunkWeather />
-          </SideDisplay>
-          <SideDisplay
-            icon={<Moon width={30} height={30} />}
-            title="MOON CONTROL"
-            theme="cyber"
-            position="right"
-            verticalPosition="top"
-            verticalOffset={150}
-            collapsedSize={40}
-            width={420}
-          >
-            <MoonPhase />
-          </SideDisplay>
-        </div>
+        <PerformanceProvider>
+          <div className="min-h-screen bg-black text-gray-100 relative overflow-x-hidden pt-10 lg:pt-0">
+            <div className="fixed inset-0 bg-space-grid opacity-20 z-0" />
+            <EnergyMouseField />
+            <AnimatedStars />
+            <Navbar />
+            <ScrollArea>{children}</ScrollArea>
+            <Terminal />
+            <SideDisplay
+              icon={<SunMoon width={30} height={30} />}
+              title="WEATHER CONTROL"
+              theme="cyber"
+              position="right"
+              verticalPosition="top"
+              verticalOffset={100}
+              collapsedSize={40}
+              width={420}
+            >
+              <CyberpunkWeather />
+            </SideDisplay>
+            <SideDisplay
+              icon={<Moon width={30} height={30} />}
+              title="MOON CONTROL"
+              theme="cyber"
+              position="right"
+              verticalPosition="top"
+              verticalOffset={150}
+              collapsedSize={40}
+              width={420}
+            >
+              <MoonPhase />
+            </SideDisplay>
+            <Footer />
+          </div>
+        </PerformanceProvider>
       </body>
     </html>
   );

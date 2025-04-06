@@ -67,7 +67,7 @@ const ProjectCard = ({
       initial={{ opacity: 0, y: 20 }}
       animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
       transition={{ duration: 0.5, delay: 0.1 }}
-      className="w-full"
+      className="w-full h-full"
       whileHover={{ scale: 1.02 }}
     >
       <HologramContainer
@@ -149,7 +149,9 @@ const ProjectCard = ({
           </CardHeader>
 
           <CardContent className="p-4 pt-0 pb-2 flex-grow relative z-10">
-            <p className="text-sm text-gray-300">{project.description}</p>
+            <p className="text-sm text-gray-300 line-clamp-4">
+              {project.description}
+            </p>
           </CardContent>
 
           <CardFooter className="p-4 pt-2 flex justify-between items-center relative z-10">

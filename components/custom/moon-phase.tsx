@@ -2,15 +2,16 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-// import { useGlitchText } from "@/lib/hooks/useGlitchText";
 import { CyberpunkButton } from "./cyber-button";
 import { useGlitchText } from "@/lib/hooks/useGlitchText";
+import { usePerformanceMode } from "@/lib/contexts/performance-mode";
 
 const MoonPhase = () => {
   const [moonImageUrl, setMoonImageUrl] = useState<string | null>(null);
   const [moonData, setMoonData] = useState<any>(null); //eslint-disable-line
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { reducedAnimations } = usePerformanceMode();
   const { text: sync } = useGlitchText({
     text: `SYNC: ${new Date().toISOString().split("T")[1].substring(0, 8)}`,
   });
@@ -112,7 +113,9 @@ const MoonPhase = () => {
 
           <div className="text-xs font-mono text-purple-400 mt-1 tracking-wider">
             {loading ? (
-              <span className="animate-pulse">ESTABLISHING CONNECTION...</span>
+              <span className={reducedAnimations ? "" : "animate-pulse"}>
+                ESTABLISHING CONNECTION...
+              </span>
             ) : (
               <span>{sync}</span>
             )}
@@ -127,16 +130,28 @@ const MoonPhase = () => {
 
           {loading ? (
             <div className="flex flex-col items-center justify-center h-full">
-              <div className="relative w-32 h-32 animate-spin-slow">
+              <div
+                className={`relative w-32 h-32 ${
+                  reducedAnimations ? "" : "animate-spin-slow"
+                }`}
+              >
                 <div className="absolute inset-0 rounded-full border-2 border-dashed border-purple-500"></div>
                 <div className="absolute inset-4 rounded-full border border-cyan-400"></div>
               </div>
-              <div className="mt-4 font-mono text-purple-400 text-sm animate-pulse">
+              <div
+                className={`mt-4 font-mono text-purple-400 text-sm ${
+                  reducedAnimations ? "" : "animate-pulse"
+                }`}
+              >
                 ACQUIRING SATELLITE FEED
               </div>
               <div className="mt-2 font-mono text-cyan-300 text-xs">
                 [DATA PACKETS:{" "}
-                <span className="text-purple-300 animate-pulse">
+                <span
+                  className={`text-purple-300 ${
+                    reducedAnimations ? "" : "animate-pulse"
+                  }`}
+                >
                   {Math.floor(Math.random() * 100)}%
                 </span>
                 ]
@@ -145,7 +160,9 @@ const MoonPhase = () => {
           ) : error ? (
             <div className="flex flex-col items-center justify-center h-full text-red-500 p-4">
               <div
-                className="text-xl mb-2 font-mono animate-pulse"
+                className={`text-xl mb-2 font-mono ${
+                  reducedAnimations ? "" : "animate-pulse"
+                }`}
                 data-text="TRANSMISSION ERROR"
               >
                 {transmissionError}
@@ -187,14 +204,18 @@ const MoonPhase = () => {
           <span
             className={`h-2 w-2 rounded-full ${
               loading
-                ? "bg-yellow-500 animate-pulse"
+                ? reducedAnimations
+                  ? "bg-yellow-500"
+                  : "bg-yellow-500 animate-pulse"
                 : error
                 ? "bg-red-500"
                 : "bg-green-500"
             }`}
           ></span>
           {loading ? (
-            <span className="animate-pulse">ANALYZING LUNAR DATA...</span>
+            <span className={reducedAnimations ? "" : "animate-pulse"}>
+              ANALYZING LUNAR DATA...
+            </span>
           ) : error ? (
             <span className="text-red-400 "> {systemError}</span>
           ) : (

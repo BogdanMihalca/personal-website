@@ -191,7 +191,8 @@ export const SideDisplay = ({
             >
               {title && (
                 <div className={cn("mb-4 pb-2", themeStyles.title)}>
-                  <GlitchText text={title} variant="holo" /> <span>_v1.2</span>
+                  <GlitchText color="cyan">{title}</GlitchText>{" "}
+                  <span>_v1.2</span>
                 </div>
               )}
               <div
@@ -207,7 +208,6 @@ export const SideDisplay = ({
           )}
         </AnimatePresence>
 
-        {/* close button to right */}
         {isExpanded && (
           <button
             className={cn(

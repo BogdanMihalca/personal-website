@@ -2,6 +2,7 @@
 import { useState, useEffect, FC, ReactElement } from "react";
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
+import { usePerformanceMode } from "@/lib/contexts/performance-mode";
 
 const CyberpunkDisplay: FC<{
   title: string;
@@ -11,29 +12,36 @@ const CyberpunkDisplay: FC<{
   const [glitchActive, setGlitchActive] = useState(false);
   const [hardGlitch, setHardGlitch] = useState(false);
   const [headerGlitch, setHeaderGlitch] = useState(false);
+  const { reducedAnimations } = usePerformanceMode();
 
   useEffect(() => {
-    const minorGlitchInterval = setInterval(() => {
-      setGlitchActive(true);
-      setTimeout(() => setGlitchActive(false), 100 + Math.random() * 200);
-    }, 800 + Math.random() * 1200);
+    // If reducedAnimations is true, disable all animations by not setting up intervals
+    if (reducedAnimations) {
+      return () => {};
+    }
 
-    const majorGlitchInterval = setInterval(() => {
-      setHardGlitch(true);
-      setTimeout(() => setHardGlitch(false), 250);
-    }, 4000 + Math.random() * 3000);
+    // Normal animation mode
+    const glitchController = setInterval(() => {
+      // Determine which type of glitch to trigger
+      const glitchType = Math.random();
 
-    const headerGlitchInterval = setInterval(() => {
-      setHeaderGlitch(true);
-      setTimeout(() => setHeaderGlitch(false), 150);
-    }, 3000 + Math.random() * 2000);
+      if (glitchType < 0.6) {
+        // Minor glitch (more common)
+        setGlitchActive(true);
+        setTimeout(() => setGlitchActive(false), 100 + Math.random() * 200);
+      } else if (glitchType < 0.8) {
+        // Header glitch (less common)
+        setHeaderGlitch(true);
+        setTimeout(() => setHeaderGlitch(false), 150);
+      } else {
+        // Hard glitch (rare)
+        setHardGlitch(true);
+        setTimeout(() => setHardGlitch(false), 250);
+      }
+    }, 1000 + Math.random() * 2000); // Consolidated interval timing
 
-    return () => {
-      clearInterval(minorGlitchInterval);
-      clearInterval(majorGlitchInterval);
-      clearInterval(headerGlitchInterval);
-    };
-  }, []);
+    return () => clearInterval(glitchController);
+  }, [reducedAnimations]);
 
   const generateHexLine = (length: number) => {
     return Array.from({ length })
@@ -43,6 +51,50 @@ const CyberpunkDisplay: FC<{
           .toUpperCase()
       )
       .join("");
+  };
+
+  // Helper function to conditionally render animations
+  const getAnimationProps = (animType: string) => {
+    if (reducedAnimations) {
+      // Return empty/static props when reducedAnimations is true
+      return {};
+    }
+
+    // Return proper animation props based on type
+    switch (animType) {
+      case "scanline":
+        return {
+          animate: { y: [0, 40, 0], opacity: [0, 1, 0] },
+          transition: {
+            duration: 2,
+            repeat: Infinity,
+            repeatType: "loop" as const,
+          },
+        };
+      case "headerGlitch":
+        return headerGlitch
+          ? {
+              animate: { x: [0, -2, 3, -3, 0], skewX: [0, -4, 6, -2, 0] },
+              transition: { duration: 0.2 },
+            }
+          : {};
+      case "cursor":
+        return {
+          animate: { opacity: [0, 1, 0] },
+          transition: {
+            duration: 1.5,
+            repeat: Infinity,
+            repeatType: "loop" as const,
+          },
+        };
+      case "scrollingText":
+        return {
+          animate: { x: ["100%", "-100%"] },
+          transition: { duration: 20, repeat: Infinity, ease: "linear" },
+        };
+      default:
+        return {};
+    }
   };
 
   return (
@@ -61,13 +113,14 @@ const CyberpunkDisplay: FC<{
           <div
             className="absolute inset-0"
             style={{
-              background:
-                "conic-gradient(transparent, #f0f, #0ff, transparent)",
-              animation: "spin 4s linear infinite",
+              background: reducedAnimations
+                ? "linear-gradient(135deg, #0ff, #f0f)"
+                : "conic-gradient(transparent, #f0f, #0ff, transparent)",
+              animation: reducedAnimations ? "none" : "spin 4s linear infinite",
             }}
           />
         </div>
-        {hardGlitch && (
+        {hardGlitch && !reducedAnimations && (
           <motion.div
             className="absolute inset-0 z-50 pointer-events-none"
             initial={{ opacity: 0 }}
@@ -95,37 +148,36 @@ const CyberpunkDisplay: FC<{
             <div className="relative border-b-2 border-cyan-500/50">
               <motion.div
                 className="absolute h-0.5 w-full bg-cyan-400/80 z-10"
-                animate={{
-                  y: [0, 40, 0],
-                  opacity: [0, 1, 0],
-                }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  repeatType: "loop",
-                }}
+                {...getAnimationProps("scanline")}
               />
 
               <div
                 className={`relative p-2 ${
-                  headerGlitch ? "bg-red-500/20" : "bg-gray-900"
+                  headerGlitch && !reducedAnimations
+                    ? "bg-red-500/20"
+                    : "bg-gray-900"
                 } flex items-center overflow-hidden`}
                 style={{
-                  backgroundImage: headerGlitch
-                    ? ""
-                    : "radial-gradient(circle, rgba(0,255,255,0.1) 1px, transparent 1px)",
+                  backgroundImage:
+                    headerGlitch && !reducedAnimations
+                      ? ""
+                      : "radial-gradient(circle, rgba(0,255,255,0.1) 1px, transparent 1px)",
                   backgroundSize: "12px 12px",
                 }}
               >
                 <div className="hidden md:flex items-center">
-                  <div className="text-cyan-400 text-xs   mr-2 opacity-70">
+                  <div className="text-cyan-400 text-xs mr-2 opacity-70">
                     SYS://
                   </div>
-                  <div className="h-3 w-3 bg-cyan-400 rounded-full animate-pulse" />
+                  <div
+                    className={`h-3 w-3 bg-cyan-400 rounded-full ${
+                      reducedAnimations ? "" : "animate-pulse"
+                    }`}
+                  />
                 </div>
 
                 <div className="flex-1 flex justify-center relative overflow-visible">
-                  {glitchActive && (
+                  {glitchActive && !reducedAnimations && (
                     <motion.div
                       className="absolute font-bold text-xl text-fuchsia-600/70 left-0 right-0 text-center"
                       style={{
@@ -139,66 +191,67 @@ const CyberpunkDisplay: FC<{
                     </motion.div>
                   )}
 
-                  {/* Main title with text shadow */}
                   <motion.h2
                     className={`font-bold text-xl ${
-                      glitchActive ? "text-cyan-400" : "text-transparent"
+                      glitchActive && !reducedAnimations
+                        ? "text-cyan-400"
+                        : "text-transparent"
                     } tracking-wider text-center uppercase`}
-                    animate={
-                      headerGlitch
-                        ? {
-                            x: [0, -2, 3, -3, 0],
-                            skewX: [0, -4, 6, -2, 0],
-                          }
-                        : {}
-                    }
-                    transition={{ duration: 0.2 }}
+                    {...getAnimationProps("headerGlitch")}
                     style={{
                       fontFamily: "'Orbitron', sans-serif",
-                      textShadow: glitchActive
-                        ? "rgba(255,0,255,0.8) 0 0 1px, rgba(255,0,255,0.8) 0 0 3px, rgba(255,0,255,0.8) 0 0 5px"
-                        : "0 0 4px #0ff, 0 0 11px #0ff, 0 0 19px #0ff",
-                      WebkitTextStroke: glitchActive
-                        ? "0.5px rgba(0,255,255,0.6)"
-                        : "0.5px rgba(0,255,255,0.8)",
-                      backgroundImage: !glitchActive
-                        ? "linear-gradient(90deg, #0ff, #f0f, #0ff)"
-                        : "",
+                      textShadow:
+                        glitchActive && !reducedAnimations
+                          ? "rgba(255,0,255,0.8) 0 0 1px, rgba(255,0,255,0.8) 0 0 3px, rgba(255,0,255,0.8) 0 0 5px"
+                          : "0 0 4px #0ff, 0 0 11px #0ff, 0 0 19px #0ff",
+                      WebkitTextStroke:
+                        glitchActive && !reducedAnimations
+                          ? "0.5px rgba(0,255,255,0.6)"
+                          : "0.5px rgba(0,255,255,0.8)",
+                      backgroundImage:
+                        !glitchActive || reducedAnimations
+                          ? "linear-gradient(90deg, #0ff, #f0f, #0ff)"
+                          : "",
                       backgroundSize: "200% auto",
                       WebkitBackgroundClip: "text",
-                      animation: !glitchActive
-                        ? "gradient 3s linear infinite"
-                        : "",
-                      filter: headerGlitch ? "hue-rotate(90deg)" : "none",
+                      animation:
+                        !glitchActive || reducedAnimations
+                          ? reducedAnimations
+                            ? "none"
+                            : "gradient 3s linear infinite"
+                          : "",
+                      filter:
+                        headerGlitch && !reducedAnimations
+                          ? "hue-rotate(90deg)"
+                          : "none",
                     }}
                   >
                     {title}
 
                     <span className="inline-block">
-                      <motion.span
-                        animate={{ opacity: [0, 1, 0] }}
-                        transition={{
-                          duration: 1.5,
-                          repeat: Infinity,
-                          repeatType: "loop",
-                        }}
-                      >
+                      <motion.span {...getAnimationProps("cursor")}>
                         _
                       </motion.span>
                     </span>
                   </motion.h2>
                 </div>
 
-                <div className="hidden md:block text-cyan-400/70 text-xs   ml-2">
-                  <span className="animate-pulse">█</span>
+                <div className="hidden md:block text-cyan-400/70 text-xs ml-2">
+                  <span className={reducedAnimations ? "" : "animate-pulse"}>
+                    █
+                  </span>
                   <span>{generateHexLine(4)}</span>
                 </div>
               </div>
 
-              <div className="flex justify-between bg-black text-xs   overflow-hidden text-cyan-500/70 px-1">
+              <div className="flex justify-between bg-black text-xs overflow-hidden text-cyan-500/70 px-1">
                 <motion.div
-                  animate={{ opacity: [0.5, 0.8, 0.5] }}
-                  transition={{ duration: 3, repeat: Infinity }}
+                  animate={
+                    reducedAnimations ? {} : { opacity: [0.5, 0.8, 0.5] }
+                  }
+                  transition={
+                    reducedAnimations ? {} : { duration: 3, repeat: Infinity }
+                  }
                 >
                   {generateHexLine(12)}
                 </motion.div>
@@ -231,7 +284,7 @@ const CyberpunkDisplay: FC<{
               >
                 <div className="relative z-20">{children}</div>
 
-                {glitchActive && (
+                {glitchActive && !reducedAnimations && (
                   <>
                     <motion.div
                       className="absolute h-2 bg-fuchsia-600/30 z-30 pointer-events-none"
@@ -257,13 +310,8 @@ const CyberpunkDisplay: FC<{
             <div className="border-t-2 border-cyan-500/50 bg-black/70 overflow-hidden ">
               <div className="relative overflow-hidden">
                 <motion.div
-                  animate={{ x: ["100%", "-100%"] }}
-                  transition={{
-                    duration: 20,
-                    repeat: Infinity,
-                    ease: "linear",
-                  }}
-                  className="text-xs text-cyan-400/60   tracking-wider py-1 inline-block"
+                  className="text-xs text-cyan-400/60 tracking-wider py-1 inline-block"
+                  {...getAnimationProps("scrollingText")}
                 >
                   NET//BREACH:::{generateHexLine(16)}:::AUTH_BYPASS_ACTIVE:::
                   {generateHexLine(8)}:::NEURO_LINK_ESTABLISHED:::
@@ -282,7 +330,7 @@ const CyberpunkDisplay: FC<{
         <div className="absolute -top-1 -right-1 w-2 h-8 bg-fuchsia-600/60" />
         <div className="absolute -bottom-1 -left-1 w-8 h-2 bg-cyan-400/60" />
 
-        {hardGlitch && (
+        {hardGlitch && !reducedAnimations && (
           <>
             <motion.div
               className="absolute -right-3 top-1/3 bg-cyan-400 w-6 h-1"

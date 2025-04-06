@@ -1,5 +1,6 @@
 import { useGlitchText } from "@/lib/hooks/useGlitchText";
 import { useState, useEffect } from "react";
+import { usePerformanceMode } from "@/lib/contexts/performance-mode";
 
 type CyberpunkButtonProps = {
   onClick?: () => void;
@@ -29,10 +30,18 @@ const CyberpunkButton = ({
   type = "button",
   icon,
 }: CyberpunkButtonProps) => {
-  const { text } = useGlitchText({
-    text: loading ? loadingText : children?.toString() || "",
+  const { reducedAnimations } = usePerformanceMode();
+  const displayText = loading ? loadingText : children?.toString() || "";
+
+  // Always call hook regardless of reduced animations setting
+  const { text: glitchedText } = useGlitchText({
+    text: displayText,
     interval: 100,
   });
+
+  // Use the glitched text only if animations aren't reduced
+  const text = reducedAnimations ? displayText : glitchedText;
+
   const [cursorBlink, setCursorBlink] = useState(true);
 
   const variants = {
@@ -102,12 +111,18 @@ const CyberpunkButton = ({
 
   // Cursor blink effect
   useEffect(() => {
+    // Only apply blinking cursor if animations aren't reduced
+    if (reducedAnimations) {
+      setCursorBlink(true);
+      return;
+    }
+
     const interval = setInterval(() => {
       setCursorBlink((prev) => !prev);
     }, 500);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [reducedAnimations]);
 
   const currentVariant = variants[variant] || variants.primary;
   const currentSize = sizes[size] || sizes.md;
@@ -128,12 +143,10 @@ const CyberpunkButton = ({
         ${fullWidth ? "w-full" : ""} ${className}
       `}
     >
-      {/* Background gradient effect */}
       <div
         className={`absolute inset-0 bg-gradient-to-r ${currentVariant.gradFrom} ${currentVariant.gradTo} opacity-50 group-hover:opacity-70`}
       />
 
-      {/* Corner accents */}
       <div
         className={`absolute top-0 left-0 w-2 h-2 border-t border-l ${currentVariant.cornerTL}`}
       />
@@ -147,7 +160,6 @@ const CyberpunkButton = ({
         className={`absolute bottom-0 right-0 w-2 h-2 border-b border-r ${currentVariant.cornerBR}`}
       />
 
-      {/* Text content with glitch effect and blinking cursor */}
       <span className="relative z-10 inline-flex items-center whitespace-nowrap">
         {icon && <span className="mr-1">{icon}</span>}
 

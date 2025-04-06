@@ -187,11 +187,12 @@ const AboutSection = () => {
         >
           <div className="inline-block relative p-6">
             <GlitchText
-              text="About.ME"
-              variant="neon"
+              color="cyan"
               intensity="high"
               className="text-xl md:text-2xl font-cyber"
-            />
+            >
+              About.ME
+            </GlitchText>
             <div className="absolute -inset-2 bg-neon-cyan/15 blur-xl rounded-lg -z-10"></div>
           </div>
 
@@ -245,11 +246,9 @@ const AboutSection = () => {
             <div className="relative">
               <h2 className="text-neon-cyan font-bold text-xl mb-4 flex items-center">
                 <span className="text-neon-pink mr-2">[</span>
-                <GlitchText
-                  text="PERSONAL_MATRIX"
-                  variant="neon"
-                  intensity="medium"
-                />
+                <GlitchText color="cyan" intensity="medium">
+                  PERSONAL_MATRIC
+                </GlitchText>
                 <span className="text-neon-pink ml-2">]</span>
               </h2>
 
@@ -299,11 +298,12 @@ const AboutSection = () => {
                 transition={{ duration: 0.8, delay: 0.4 }}
               >
                 <GlitchText
-                  text="WORK_HISTORY"
-                  variant="neon"
+                  color="cyan"
                   intensity="medium"
                   className="text-neon-cyan font-bold text-md mb-4"
-                />
+                >
+                  WORK_HISTORY
+                </GlitchText>
 
                 <div className="relative pl-6 space-y-8 mb-8 before:content-[''] before:absolute before:left-0 before:top-2 before:bottom-4 before:w-[2px] before:bg-neon-blue/30">
                   {workHistory.map((job, index) => (
@@ -400,11 +400,12 @@ const AboutSection = () => {
                 transition={{ duration: 0.8, delay: 0.4 }}
               >
                 <GlitchText
-                  text="EDUCATION"
-                  variant="holo"
+                  color="fuchsia"
                   intensity="medium"
                   className="text-neon-cyan font-bold text-md mb-4"
-                />
+                >
+                  EDUCATION
+                </GlitchText>
 
                 <div className="space-y-6">
                   {education.map((edu, index) => (
@@ -472,11 +473,12 @@ const AboutSection = () => {
                 transition={{ duration: 0.8, delay: 0.5 }}
               >
                 <GlitchText
-                  text="TECH_STACK"
-                  variant="holo"
+                  color="fuchsia"
                   intensity="medium"
                   className="text-neon-purple font-bold text-md mb-6 tracking-wider flex items-center"
-                />
+                >
+                  TECH_STACK
+                </GlitchText>
 
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 gap-2">
                   {techStack?.map((tech, index) => (
@@ -562,11 +564,12 @@ const AboutSection = () => {
                 transition={{ duration: 0.8, delay: 0.5 }}
               >
                 <GlitchText
-                  text="HOBBIES"
-                  variant="glitch"
+                  color="green"
                   intensity="high"
                   className="text-neon-pink font-bold text-md mb-4"
-                />
+                >
+                  HOBBIES
+                </GlitchText>
 
                 <div className="flex flex-wrap gap-4">
                   {hobbies.map((hobby, index) => (

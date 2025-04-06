@@ -13,18 +13,29 @@ import {
 import { FloatingCube } from "./floating-cube";
 import { CyberTerminal } from "./cyber-terminal";
 import { CyberpunkButton } from "./cyber-button";
+import { usePerformanceMode } from "@/lib/contexts/performance-mode";
 
 const CyberpunkHero = () => {
   const [glitchEffect, setGlitchEffect] = useState(false);
+  const { reducedAnimations } = usePerformanceMode();
 
   useEffect(() => {
+    // Skip all glitch effects if reduced animations is on
+    if (reducedAnimations) {
+      setGlitchEffect(false);
+      return;
+    }
+
+    // Normal animation mode
     const glitchInterval = setInterval(() => {
-      setGlitchEffect(true);
-      setTimeout(() => setGlitchEffect(false), 200);
-    }, Math.random() * 5000 + 3000);
+      if (Math.random() > 0.85) {
+        setGlitchEffect(true);
+        setTimeout(() => setGlitchEffect(false), 150);
+      }
+    }, 500);
 
     return () => clearInterval(glitchInterval);
-  }, []);
+  }, [reducedAnimations]);
 
   return (
     <section className="relative min-h-screen overflow-hidden" id="home">
@@ -90,13 +101,28 @@ const CyberpunkHero = () => {
           <CyberTerminal />
 
           <div className="flex flex-wrap gap-4 mt-8">
-            <CyberpunkButton size="md" icon={<Code className="w-4 h-4 mr-2" />}>
+            <CyberpunkButton
+              size="md"
+              icon={<Code className="w-4 h-4 mr-2" />}
+              onClick={() =>
+                window.scrollTo({
+                  top: document.getElementById("projects")?.offsetTop,
+                  behavior: "smooth",
+                })
+              }
+            >
               View Portfolio
             </CyberpunkButton>
             <CyberpunkButton
               size="md"
               variant="secondary"
               icon={<Phone className="w-4 h-4 mr-2" />}
+              onClick={() =>
+                window.scrollTo({
+                  top: document.getElementById("contact")?.offsetTop,
+                  behavior: "smooth",
+                })
+              }
             >
               Contact
             </CyberpunkButton>

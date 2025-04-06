@@ -1,15 +1,19 @@
+import { usePerformanceMode } from "@/lib/contexts/performance-mode";
 import { motion } from "framer-motion";
 import { Cpu, Camera, Globe, Video, PlaneTakeoff } from "lucide-react";
 
 const CyberTerminal = () => {
+  const { reducedAnimations } = usePerformanceMode();
+
   return (
     <div className="bg-black backdrop-blur-md p-4 border border-fuchsia-500/50 rounded-md my-6 relative overflow-hidden shadow-lg font-mono">
-      <motion.div
-        className="absolute left-0 w-full h-1 bg-cyan-500/30"
-        animate={{ top: [0, "100%"] }}
-        transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-      />
-
+      {!reducedAnimations && (
+        <motion.div
+          className="absolute left-0 w-full h-1 bg-cyan-500/30"
+          animate={{ top: [0, "100%"] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+        />
+      )}
       <div className="flex items-center justify-between mb-3 border-b border-fuchsia-800/30 pb-2">
         <div className="flex items-center">
           <Cpu className="h-4 w-4 mr-2 text-fuchsia-500" />

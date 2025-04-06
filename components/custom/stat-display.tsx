@@ -6,6 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { GlitchText } from "@/components/custom/glitch-text";
 import { HologramContainer } from "@/components/custom/hologram-container";
 import { cn } from "@/lib/utils";
+import { usePerformanceMode } from "@/lib/contexts/performance-mode";
 
 interface StatItem {
   label: string;
@@ -33,6 +34,7 @@ const StatsDisplay = ({
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const { reducedAnimations } = usePerformanceMode();
 
   const fetchData = useCallback(async () => {
     try {
@@ -76,14 +78,26 @@ const StatsDisplay = ({
     return colors[Math.floor(Math.random() * colors.length)];
   };
 
+  // Get appropriate refresh interval based on performance mode
+  const getAdjustedRefreshInterval = useCallback(() => {
+    if (!refreshInterval) return 0; // No refresh
+
+    if (reducedAnimations) {
+      // Reduce refresh frequency in performance mode
+      return Math.max(refreshInterval * 3, 10000); // At least 10s between refreshes
+    }
+
+    return refreshInterval;
+  }, [refreshInterval, reducedAnimations]);
+
   useEffect(() => {
     fetchData();
 
     if (refreshInterval > 0) {
-      const interval = setInterval(fetchData, refreshInterval);
+      const interval = setInterval(fetchData, getAdjustedRefreshInterval());
       return () => clearInterval(interval);
     }
-  }, [endpoint, fetchData, refreshInterval]);
+  }, [endpoint, fetchData, getAdjustedRefreshInterval, refreshInterval]);
 
   return (
     <HologramContainer className={cn("w-full", className)}>
@@ -91,7 +105,7 @@ const StatsDisplay = ({
         <CardHeader className="pb-2">
           <div className="flex justify-between items-center">
             <CardTitle className="font-retro text-neon-cyan">
-              <GlitchText text={title.toUpperCase()} />
+              <GlitchText>{title.toUpperCase()}</GlitchText>
             </CardTitle>
 
             <div className="flex items-center gap-2">

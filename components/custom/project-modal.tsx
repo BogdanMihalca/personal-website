@@ -66,10 +66,13 @@ const ProjectModal = ({
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogOverlay className="backdrop-blur-sm" />
-      <DialogContent className="sm:max-w-[95vw] md:max-w-[85vw] lg:max-w-4xl xl:max-w-5xl w-full max-h-[90vh] border-none bg-transparent p-0 overflow-hidden ">
+      <DialogContent
+        className="sm:max-w-[95vw] md:max-w-[85vw] lg:max-w-4xl xl:max-w-5xl w-full max-h-[90vh] border-none bg-transparent p-0 overflow-hidden "
+        title="project-modal"
+      >
         <CyberpunkDisplay
           title={project.title}
-          className="max-w-4xl mx-auto w-full"
+          className="max-w-[90vw] md:max-w-[60vw] mx-auto"
         >
           <div className="text-cyan-100 overflow-y-auto max-h-[calc(80vh-100px)] w-full">
             <div className="relative h-64 lg:h-80 mb-6 group">

@@ -125,7 +125,6 @@ const CyberBadge = ({
     >
       <span className="relative z-10">{children}</span>
 
-      {/* Animated line effect */}
       <motion.div
         className={`absolute bottom-0 left-0 h-[1px] w-full bg-gradient-to-r ${getLineColor()}`}
         animate={{
@@ -139,7 +138,6 @@ const CyberBadge = ({
         }}
       />
 
-      {/* Variant-specific decorations */}
       {variant === "circuit" && (
         <div className="absolute inset-0 opacity-20 pointer-events-none">
           <div className="absolute top-1/2 left-0 w-1 h-[1px] bg-neon-green" />
@@ -177,7 +175,6 @@ const CyberBadge = ({
         />
       )}
 
-      {/* Corner accents */}
       <div
         className={`absolute top-0 right-0 w-1 h-1 border-t border-r ${getBorderColor()}`}
       />
@@ -185,7 +182,6 @@ const CyberBadge = ({
         className={`absolute bottom-0 left-0 w-1 h-1 border-b border-l ${getBorderColor()}`}
       />
 
-      {/* Hover effect */}
       <motion.div
         className={`absolute inset-0 bg-transparent ${getHoverBgColor()} transition-all duration-300`}
         initial={{ opacity: 0 }}

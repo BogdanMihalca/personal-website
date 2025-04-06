@@ -62,7 +62,7 @@ To ensure accuracy, I trained multiple AI models on a dataset enhanced through w
   {
     id: "medi-connect",
     title: "MediConnect - Health Data",
-    description: `MediConnect streamlines medical referrals with AI-driven diagnosis, BERT-based symptom analysis, and a pro dashboard. Built during a hackathon`,
+    description: `MediConnect streamlines medical referrals with AI-driven diagnosis, BERT-based symptom analysis, and a pro dashboard. Built during a hackathon, it offers secure patient data management.`,
     fullDescription: `MediConnect is an AI-driven healthcare platform designed to transform the medical referral process. Using a locally trained BERT model optimized with ONNX, it performs client-side symptom analysis while also integrating OpenAI for comparative results. Patients can interactively input symptoms via a guided journey or free text, receive detailed PDF reports, and visualize confidence scores with interactive charts.
 
 For healthcare providers, the platform includes a professional dashboard, appointment management, and patient data organization tools. The system ensures modern authentication with NextAuth, secure session management, and a scalable Neon Edge database while maintaining HIPAA compliance.
@@ -147,11 +147,12 @@ const ProjectSection = () => {
         <motion.div className="mb-12 relative text-center">
           <div className="inline-block relative p-6 mx-auto">
             <GlitchText
-              text="Projects"
-              variant="neon"
+              color="cyan"
               intensity="high"
               className="text-xl md:text-2xl font-cyber"
-            />
+            >
+              Projects
+            </GlitchText>
             <div className="absolute -inset-2 bg-neon-cyan/15 blur-xl rounded-lg -z-10"></div>
           </div>
 
@@ -164,46 +165,44 @@ const ProjectSection = () => {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
+        <div className="flex flex-col md:flex-row gap-6 mt-4 justify-center">
           {displayedProjects.map((project) => (
-            <ProjectCard
-              key={project.id}
-              project={project}
-              onSelect={setSelectedProject}
-            />
+            <div key={project.id} className="md:w-[33vw] h-full">
+              <ProjectCard project={project} onSelect={setSelectedProject} />
+            </div>
           ))}
         </div>
-
-        {totalPages > 1 && (
-          <div className="mt-10 flex justify-center items-center gap-4">
-            <CyberpunkButton
-              onClick={prevPage}
-              disabled={currentPage === 0}
-              variant={currentPage === 0 ? "secondary" : "primary"}
-              size="sm"
-              icon={<ChevronLeft size={16} />}
-            >
-              PREV
-            </CyberpunkButton>
-
-            <div className="text-center">
-              <span className="text-xs text-cyan-400 font-mono tracking-wider bg-black/50 px-3 py-1 rounded-sm border border-cyan-500/30">
-                PAGE {currentPage + 1} / {totalPages}
-              </span>
-            </div>
-
-            <CyberpunkButton
-              onClick={nextPage}
-              disabled={currentPage === totalPages - 1}
-              variant={currentPage === totalPages - 1 ? "secondary" : "primary"}
-              size="sm"
-              icon={<ChevronRight size={16} className="ml-1 order-2" />}
-            >
-              NEXT
-            </CyberpunkButton>
-          </div>
-        )}
       </div>
+
+      {totalPages > 1 && (
+        <div className="mt-10 flex justify-center items-center gap-4">
+          <CyberpunkButton
+            onClick={prevPage}
+            disabled={currentPage === 0}
+            variant={currentPage === 0 ? "secondary" : "primary"}
+            size="sm"
+            icon={<ChevronLeft size={16} />}
+          >
+            PREV
+          </CyberpunkButton>
+
+          <div className="text-center">
+            <span className="text-xs text-cyan-400 font-mono tracking-wider bg-black/50 px-3 py-1 rounded-sm border border-cyan-500/30">
+              PAGE {currentPage + 1} / {totalPages}
+            </span>
+          </div>
+
+          <CyberpunkButton
+            onClick={nextPage}
+            disabled={currentPage === totalPages - 1}
+            variant={currentPage === totalPages - 1 ? "secondary" : "primary"}
+            size="sm"
+            icon={<ChevronRight size={16} className="ml-1 order-2" />}
+          >
+            NEXT
+          </CyberpunkButton>
+        </div>
+      )}
 
       <ProjectModal
         project={selectedProject}

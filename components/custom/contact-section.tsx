@@ -36,7 +36,7 @@ const socialLinks = [
   {
     name: "Instagram",
     icon: <Instagram className="w-5 h-5" />,
-    url: "https://www.instagram.com/bogdanmihalca/",
+    url: "https://www.instagram.com/mihalcabogdan/",
     color: "neon-pink",
   },
 ];
@@ -100,7 +100,7 @@ const ContactSection = () => {
   return (
     <section
       ref={sectionRef}
-      className="relative py-20 bg-space-black/50 overflow-hidden"
+      className="relative py-20 bg-space-black/30 overflow-hidden"
       id="contact"
     >
       <DecoDivider className="top-0 left-0 absolute opacity-70" />
@@ -114,11 +114,12 @@ const ContactSection = () => {
         >
           <div className="inline-block relative p-6">
             <GlitchText
-              text="Contact.ME"
-              variant="neon"
+              color="cyan"
               intensity="medium"
               className="text-xl md:text-2xl font-cyber"
-            />
+            >
+              Contact.ME
+            </GlitchText>
             <div className="absolute -inset-2 bg-neon-cyan/15 blur-xl rounded-lg -z-10"></div>
           </div>
 
@@ -144,11 +145,9 @@ const ContactSection = () => {
               <div className="mb-6">
                 <h3 className="text-neon-cyan text-xl mb-2 flex items-center">
                   <span className="text-neon-pink mr-2">[</span>
-                  <GlitchText
-                    text="MESSAGE_PROTOCOL"
-                    variant="neon"
-                    intensity="low"
-                  />
+                  <GlitchText color="cyan" intensity="low">
+                    MESSAGE_PROTOCOL
+                  </GlitchText>
                   <span className="text-neon-pink ml-2">]</span>
                 </h3>
                 <div className="h-[1px] w-full bg-gradient-to-r from-neon-cyan via-neon-pink to-transparent mb-4" />
@@ -279,7 +278,9 @@ const ContactSection = () => {
               <div className="mb-6">
                 <h3 className="text-neon-pink text-xl mb-2 flex items-center">
                   <span className="text-neon-cyan mr-2">[</span>
-                  <GlitchText text="CONNECT" variant="holo" intensity="low" />
+                  <GlitchText color="fuchsia" intensity="low">
+                    Contact
+                  </GlitchText>
                   <span className="text-neon-cyan ml-2">]</span>
                 </h3>
                 <div className="h-[1px] w-full bg-gradient-to-r from-neon-pink via-neon-cyan to-transparent mb-4" />
@@ -317,10 +318,10 @@ const ContactSection = () => {
                         href={link.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className={`flex items-center justify-center p-3  bg-black/20 rounded-sm hover:bg-black/40 transition-all group`}
+                        className="flex items-center justify-center p-3 bg-black/30 rounded-sm transition-all duration-300 group border border-transparent hover:border-cyan-500/30"
                         whileHover={{
                           y: -5,
-                          backgroundColor: "rgba(0,0,0,0.4)",
+                          boxShadow: "0 10px 15px -3px rgba(0, 255, 255, 0.2)",
                         }}
                         initial={{ opacity: 0, y: 20 }}
                         animate={
@@ -328,14 +329,32 @@ const ContactSection = () => {
                             ? { opacity: 1, y: 0 }
                             : { opacity: 0, y: 20 }
                         }
-                        transition={{ duration: 0.5, delay: 0.7 + index * 0.1 }}
+                        transition={{ duration: 0.5, delay: 0.2 + index * 0.1 }}
                       >
-                        <div
-                          className={`bg-${link.color}/20 p-2 rounded-full group-hover:bg-${link.color}/30 transition-colors`}
+                        {link.name === "GitHub" && (
+                          <div className="bg-green-300/20 p-2 rounded-full group-hover:bg-green-300/30 transition-colors">
+                            <Github className="w-5 h-5 text-green-300" />
+                          </div>
+                        )}
+                        {link.name === "LinkedIn" && (
+                          <div className="bg-cyan-400/20 p-2 rounded-full group-hover:bg-cyan-400/30 transition-colors">
+                            <Linkedin className="w-5 h-5 text-cyan-400" />
+                          </div>
+                        )}
+                        {link.name === "Instagram" && (
+                          <div className="bg-pink-500/20 p-2 rounded-full group-hover:bg-pink-500/30 transition-colors">
+                            <Instagram className="w-5 h-5 text-pink-500" />
+                          </div>
+                        )}
+                        <span
+                          className={`ml-3 text-sm transition-all duration-300 ${
+                            link.name === "GitHub"
+                              ? "text-green-300 group-hover:text-green-200"
+                              : link.name === "LinkedIn"
+                              ? "text-cyan-400 group-hover:text-cyan-300"
+                              : "text-pink-500 group-hover:text-pink-400"
+                          }`}
                         >
-                          {link.icon}
-                        </div>
-                        <span className={`ml-2 text-${link.color} text-sm`}>
                           {link.name}
                         </span>
                       </motion.a>

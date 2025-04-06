@@ -1,20 +1,28 @@
 "use client";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import { usePerformanceMode } from "@/lib/contexts/performance-mode";
 
 const EnergyMouseField = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const { reducedAnimations } = usePerformanceMode();
 
+  // Skip this effect entirely in performance mode
   useEffect(() => {
+    // Don't track mouse movements in performance mode
+    if (reducedAnimations) return;
+
     const onMouseMove = (event: MouseEvent) => {
       const rect = document.body.getBoundingClientRect();
       const newX = event.clientX - rect.left;
       const newY = event.clientY - rect.top;
 
-      // Only update position if it changed by at least 5 pixels to reduce rerenders
+      // Increase movement threshold in performance mode to reduce updates
+      const threshold = 5;
+
       if (
-        Math.abs(newX - mousePosition.x) > 5 ||
-        Math.abs(newY - mousePosition.y) > 5
+        Math.abs(newX - mousePosition.x) > threshold ||
+        Math.abs(newY - mousePosition.y) > threshold
       ) {
         setMousePosition({ x: newX, y: newY });
       }
@@ -24,7 +32,10 @@ const EnergyMouseField = () => {
     return () => {
       document.body.removeEventListener("mousemove", onMouseMove);
     };
-  }, [mousePosition.x, mousePosition.y]);
+  }, [mousePosition.x, mousePosition.y, reducedAnimations]);
+
+  // Don't render anything in performance mode
+  if (reducedAnimations) return null;
 
   return (
     <motion.div

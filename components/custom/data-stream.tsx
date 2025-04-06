@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { usePerformanceMode } from "@/lib/contexts/performance-mode";
 
 interface DataStreamProps {
   className?: string;
@@ -25,6 +26,13 @@ const DataStream = ({
   charCount = 50,
   opacity = 0.3,
 }: DataStreamProps) => {
+  const { reducedAnimations } = usePerformanceMode();
+
+  // If reducedAnimations is enabled, reduce the character count significantly
+  const actualCharCount = reducedAnimations
+    ? Math.min(10, charCount)
+    : charCount;
+
   const sizeClasses = {
     sm: "w-24 h-32 text-xs",
     md: "w-32 h-40 text-xs",
@@ -45,6 +53,11 @@ const DataStream = ({
     fast: 5,
   };
 
+  // Slow down animations dramatically in reduced animations mode
+  const actualDuration = reducedAnimations
+    ? speedDuration[speed] * 3
+    : speedDuration[speed];
+
   const variantClasses = {
     neon: `text-cyan-400/${opacity}`,
   };
@@ -62,14 +75,14 @@ const DataStream = ({
       <div className="absolute top-0 left-0 right-0 h-8 bg-gradient-to-b from-cyber-black to-transparent z-10"></div>
 
       <motion.div
-        animate={{ y: [0, -500] }}
+        animate={reducedAnimations ? {} : { y: [0, -500] }}
         transition={{
-          duration: speedDuration[speed],
+          duration: actualDuration,
           repeat: Infinity,
           ease: "linear",
         }}
       >
-        {Array(charCount)
+        {Array(actualCharCount)
           .fill(0)
           .map((_, i) => (
             <div key={i} className="whitespace-nowrap">

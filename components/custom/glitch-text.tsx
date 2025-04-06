@@ -1,100 +1,115 @@
 "use client";
-import { useState, useEffect } from "react";
+import { FC, ReactNode, useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { cn } from "@/lib/utils";
-
-type GlitchVariant = "neon" | "holo" | "glitch";
+import { usePerformanceMode } from "@/lib/contexts/performance-mode";
 
 interface GlitchTextProps {
-  text: string;
-  variant?: GlitchVariant;
-  className?: string;
+  children: ReactNode;
+  color?: "cyan" | "fuchsia" | "red" | "green";
   intensity?: "low" | "medium" | "high";
+  className?: string;
 }
 
-export const GlitchText = ({
-  text,
-  variant = "neon",
-  className,
+export const GlitchText: FC<GlitchTextProps> = ({
+  children,
+  color = "cyan",
   intensity = "medium",
-}: GlitchTextProps) => {
-  const [isGlitching, setIsGlitching] = useState(false);
+  className = "",
+}) => {
+  const [glitchActive, setGlitchActive] = useState(false);
+  const { reducedAnimations } = usePerformanceMode();
 
-  // Random glitch timing for more realistic effect
+  // Get interval timing based on intensity and performance mode
+  const getGlitchInterval = useCallback(() => {
+    if (reducedAnimations) {
+      return 10000; // Very infrequent in performance mode
+    }
+
+    switch (intensity) {
+      case "low":
+        return 3000;
+      case "high":
+        return 1000;
+      default:
+        return 2000;
+    }
+  }, [intensity, reducedAnimations]);
+
   useEffect(() => {
-    const glitchInterval = setInterval(() => {
-      setIsGlitching(true);
+    // Skip or reduce glitch animations based on performance mode
+    if (reducedAnimations) {
+      // Minimal glitches with very infrequent intervals
+      const glitchInterval = setInterval(() => {
+        if (Math.random() > 0.7) {
+          setGlitchActive(true);
+          setTimeout(() => setGlitchActive(false), 100);
+        }
+      }, getGlitchInterval());
 
-      setTimeout(() => {
-        setIsGlitching(false);
-      }, 150);
-    }, Math.random() * (intensity === "high" ? 2000 : intensity === "medium" ? 4000 : 8000) + 1000);
+      return () => clearInterval(glitchInterval);
+    }
+
+    // Normal animation mode
+    const glitchInterval = setInterval(() => {
+      const randomNum = Math.random();
+      if (randomNum > 0.6) {
+        setGlitchActive(true);
+        setTimeout(() => setGlitchActive(false), 100 + Math.random() * 200);
+      }
+    }, getGlitchInterval());
 
     return () => clearInterval(glitchInterval);
-  }, [intensity]);
+  }, [getGlitchInterval, intensity, reducedAnimations]);
 
-  // Generate glitch characters for the effect
-  const getGlitchChars = () => {
-    const glitchChars = "`¡™£¢∞§¶•ªº–≠åß∂ƒ©˙∆˚¬…æ≈ç√∫˜µ≤≥÷/?░▒▓<>/";
-    return text
-      .split("")
-      .map((char) =>
-        char !== " "
-          ? glitchChars[Math.floor(Math.random() * glitchChars.length)]
-          : " "
-      )
-      .join("");
+  const getColorClasses = () => {
+    switch (color) {
+      case "fuchsia":
+        return "text-fuchsia-400";
+      case "red":
+        return "text-red-400";
+      case "green":
+        return "text-green-400";
+      default:
+        return "text-cyan-400";
+    }
   };
 
   return (
-    <span
-      className={cn(
-        "relative inline-block font-retro tracking-wider",
-        {
-          "text-neon-cyan": variant === "neon",
-          "text-neon-purple": variant === "holo",
-          "text-neon-pink": variant === "glitch",
-        },
-        className
-      )}
+    <motion.span
+      className={`relative inline-block ${getColorClasses()} ${className} ${
+        glitchActive && !reducedAnimations ? "cyber-glitch" : ""
+      }`}
+      animate={
+        glitchActive && !reducedAnimations
+          ? {
+              x: [0, -1, 2, 0, 1, 0],
+              opacity: [1, 0.85, 1, 0.9, 1],
+            }
+          : {}
+      }
+      transition={{ duration: 0.2 }}
     >
-      {/* Main text */}
-      <span className="relative z-10">{text}</span>
+      {children}
 
-      {/* Glitch layers */}
-      <motion.span
-        className={cn("absolute left-0 top-0 z-20 opacity-0", {
-          "text-neon-cyan": variant === "neon",
-          "text-neon-purple": variant === "holo",
-          "text-neon-pink": variant === "glitch",
-        })}
-        animate={{
-          opacity: isGlitching ? [0, 0.8, 0] : 0,
-          x: isGlitching ? [-2, 1, -1, 0] : 0,
-          y: isGlitching ? [1, -1, 0] : 0,
-        }}
-        transition={{ duration: 0.15 }}
-        aria-hidden="true"
-      >
-        {isGlitching ? getGlitchChars() : text}
-      </motion.span>
-
-      <motion.span
-        className={cn("absolute left-0 top-0 z-30 opacity-0 mix-blend-screen", {
-          "text-neon-pink": variant === "neon",
-          "text-neon-cyan": variant === "holo",
-          "text-neon-yellow": variant === "glitch",
-        })}
-        animate={{
-          opacity: isGlitching ? [0, 0.6, 0] : 0,
-          x: isGlitching ? [2, -1, 1, 0] : 0,
-          y: isGlitching ? [-1, 1, 0] : 0,
-        }}
-        transition={{ duration: 0.15, delay: 0.05 }}
-        aria-hidden="true"
-      >
-        {isGlitching ? getGlitchChars() : text}
-      </motion.span>
-    </span>
+      {glitchActive && !reducedAnimations && (
+        <>
+          <motion.span
+            className={`absolute top-0 left-0 ${getColorClasses()} opacity-70 mix-blend-screen`}
+            style={{ textShadow: "2px 0 #f0f, -2px 0 #0ff" }}
+            animate={{ x: [0, 1.5, -1, 0.5, 0] }}
+            transition={{ duration: 0.15 }}
+          >
+            {children}
+          </motion.span>
+          <motion.span
+            className="absolute top-0 left-0 text-black opacity-10 mix-blend-overlay"
+            animate={{ x: [0, -1, 2, -1, 0], y: [0, 1, -1, 0.5, 0] }}
+            transition={{ duration: 0.15, delay: 0.05 }}
+          >
+            {children}
+          </motion.span>
+        </>
+      )}
+    </motion.span>
   );
 };

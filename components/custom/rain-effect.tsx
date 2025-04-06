@@ -2,6 +2,7 @@
 import { useRef, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { usePerformanceMode } from "@/lib/contexts/performance-mode";
 
 interface RainEffectProps {
   intensity?: "light" | "moderate" | "heavy";
@@ -77,9 +78,23 @@ export const RainEffect = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number>(0);
   const dropsRef = useRef<Drop[]>([]);
+  const { reducedAnimations } = usePerformanceMode();
 
   // Rain drop properties based on intensity
   const getDropCount = useCallback((): number => {
+    if (reducedAnimations) {
+      // Reduce drop count in performance mode
+      switch (intensity) {
+        case "light":
+          return 25;
+        case "heavy":
+          return 70;
+        default:
+          return 45; // moderate
+      }
+    }
+
+    // Normal drop counts
     switch (intensity) {
       case "light":
         return 100;
@@ -88,7 +103,7 @@ export const RainEffect = ({
       default:
         return 200; // moderate
     }
-  }, [intensity]);
+  }, [intensity, reducedAnimations]);
 
   const getDropColor = useCallback((): string => {
     switch (color) {
@@ -136,15 +151,32 @@ export const RainEffect = ({
 
     // Animation loop with better performance
     const render = (): void => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      // In reduced performance mode, clear less frequently
+      if (!reducedAnimations || Math.random() > 0.5) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
 
-      // Add a slight blur for glow effect
-      ctx.shadowBlur = 5;
+      // Add a slight blur for glow effect - reduce or remove in performance mode
+      ctx.shadowBlur = reducedAnimations ? 2 : 5;
       ctx.shadowColor = getDropColor();
 
-      dropsRef.current.forEach((drop) => drop.update());
+      // Update fewer drops per frame in performance mode
+      const updateCount = reducedAnimations
+        ? Math.ceil(dropsRef.current.length / 2)
+        : dropsRef.current.length;
 
-      animationRef.current = requestAnimationFrame(render);
+      for (let i = 0; i < updateCount; i++) {
+        dropsRef.current[i].update();
+      }
+
+      // Throttle framerate in performance mode
+      if (reducedAnimations) {
+        setTimeout(() => {
+          animationRef.current = requestAnimationFrame(render);
+        }, 40); // ~25 fps instead of 60fps
+      } else {
+        animationRef.current = requestAnimationFrame(render);
+      }
     };
 
     render();
@@ -154,7 +186,7 @@ export const RainEffect = ({
       window.removeEventListener("resize", resizeCanvas);
       cancelAnimationFrame(animationRef.current);
     };
-  }, [intensity, color, getDropCount, getDropColor]);
+  }, [intensity, color, getDropCount, getDropColor, reducedAnimations]);
 
   return (
     <motion.canvas
