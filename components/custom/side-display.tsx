@@ -2,9 +2,10 @@
 
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { cloneElement, useEffect, useRef, useState } from "react";
 import { GlitchText } from "./glitch-text";
 import { ArrowRightCircle } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface CyberSidePanelProps {
   icon: React.ReactNode;
@@ -18,6 +19,7 @@ interface CyberSidePanelProps {
   collapsedSize?: number;
   theme?: "cyber" | "minimal" | "neon";
   onExpandChange?: (expanded: boolean) => void;
+  hideOnDesktop?: boolean;
 }
 
 export const SideDisplay = ({
@@ -32,9 +34,13 @@ export const SideDisplay = ({
   collapsedSize = 50,
   theme = "cyber",
   onExpandChange,
+  hideOnDesktop = false,
 }: CyberSidePanelProps) => {
   const [isExpanded, setIsExpanded] = useState(initialExpanded);
   const panelRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
+  const isDesktop = !isMobile;
+  const isHidden = hideOnDesktop && isDesktop;
 
   const toggleExpand = () => {
     const newState = !isExpanded;
@@ -135,6 +141,10 @@ export const SideDisplay = ({
     return () => document.removeEventListener("keydown", handleEscKey);
   }, [isExpanded, onExpandChange]);
 
+  if (isHidden) {
+    return null;
+  }
+
   return (
     <div
       ref={panelRef}
@@ -202,7 +212,12 @@ export const SideDisplay = ({
                   "max-h-[500px] overflow-y-auto md:max-h-none"
                 )}
               >
-                {children}
+                {cloneElement(
+                  children as React.ReactElement<any>, //eslint-disable-line
+                  {
+                    toggleMenu: toggleExpand,
+                  }
+                )}
               </div>
             </motion.div>
           )}
@@ -213,7 +228,8 @@ export const SideDisplay = ({
             className={cn(
               "absolute top-2 right-2 w-6 h-6 flex items-center justify-center",
               "text-neon-pink hover:text-white transition-colors",
-              "cursor-pointer z-10"
+              "cursor-pointer z-10",
+              position === "left" ? "rotate-180" : ""
             )}
             onClick={toggleExpand}
             aria-label="Close panel"

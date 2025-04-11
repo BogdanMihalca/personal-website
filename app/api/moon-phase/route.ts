@@ -37,7 +37,7 @@ export async function GET(req: Request) {
   });
 
   const data = await response.json();
-  console.log("Moon Phase Data:------->", data);
+
 
   if (!response.ok) {
     return new Response(

@@ -106,7 +106,7 @@ const Footer = () => {
               {["home", "about", "projects", "contact"].map((section) => (
                 <li key={section}>
                   <Link
-                    href={`#${section}`}
+                    href={`/#${section}`}
                     className="text-gray-400 hover:text-neon-cyan transition-colors duration-300 flex items-center"
                   >
                     <motion.span
@@ -120,6 +120,21 @@ const Footer = () => {
                   </Link>
                 </li>
               ))}
+              <li key={"blog"}>
+                <Link
+                  href={`/blog`}
+                  className="text-gray-400 hover:text-neon-cyan transition-colors duration-300 flex items-center"
+                >
+                  <motion.span
+                    className="text-neon-cyan mr-2 opacity-80"
+                    animate={{ opacity: [0.4, 0.8, 0.4] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  >
+                    &gt;
+                  </motion.span>
+                  BLOG
+                </Link>
+              </li>
             </ul>
           </div>
 

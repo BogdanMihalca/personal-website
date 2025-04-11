@@ -41,7 +41,6 @@ const AnimatedStars = () => {
       }
     }
 
-    // Additional individual stars (fewer in performance mode)
     const extraStars = reducedAnimations ? 7 : 15;
     for (let i = 0; i < extraStars; i++) {
       allStars.push({
@@ -75,14 +74,12 @@ const AnimatedStars = () => {
             background: `radial-gradient(circle, ${star.color} 0%, rgba(0,0,0,0) 70%)`,
             left: `${star.x}%`,
             top: `${star.y}%`,
-            // Reduce glow effect in performance mode
             boxShadow: reducedAnimations
               ? `0 0 ${star.size * 2}px ${star.size * 0.5}px ${star.color}`
               : `0 0 ${star.size * 5}px ${star.size}px ${star.color}`,
           }}
           animate={{
             opacity: [0.7, 1, 0.7],
-            // Simpler animations in performance mode
             scale: reducedAnimations ? [1, 1.2, 1] : [1, 1.5, 1],
             x: [
               0,

@@ -142,7 +142,6 @@ const AboutSection = () => {
     [0, 0.2, 0.8, 1],
     [0.95, 1, 1, 0.95]
   );
-  // Removing the rotation transform
 
   return (
     <section

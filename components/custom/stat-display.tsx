@@ -66,7 +66,6 @@ const StatsDisplay = ({
     }
   }, [endpoint, maxItems]);
 
-  // Random neon color generator for variety
   const getRandomNeonColor = () => {
     const colors = [
       "neon-cyan",
@@ -78,13 +77,11 @@ const StatsDisplay = ({
     return colors[Math.floor(Math.random() * colors.length)];
   };
 
-  // Get appropriate refresh interval based on performance mode
   const getAdjustedRefreshInterval = useCallback(() => {
-    if (!refreshInterval) return 0; // No refresh
+    if (!refreshInterval) return 0;
 
     if (reducedAnimations) {
-      // Reduce refresh frequency in performance mode
-      return Math.max(refreshInterval * 3, 10000); // At least 10s between refreshes
+      return Math.max(refreshInterval * 3, 10000);
     }
 
     return refreshInterval;

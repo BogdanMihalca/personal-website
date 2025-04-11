@@ -33,13 +33,11 @@ const CyberpunkButton = ({
   const { reducedAnimations } = usePerformanceMode();
   const displayText = loading ? loadingText : children?.toString() || "";
 
-  // Always call hook regardless of reduced animations setting
   const { text: glitchedText } = useGlitchText({
     text: displayText,
     interval: 100,
   });
 
-  // Use the glitched text only if animations aren't reduced
   const text = reducedAnimations ? displayText : glitchedText;
 
   const [cursorBlink, setCursorBlink] = useState(true);
@@ -102,16 +100,13 @@ const CyberpunkButton = ({
     },
   };
 
-  // Configure size styles
   const sizes = {
     sm: "px-2 py-1 text-xs",
     md: "px-4 py-2 text-sm",
     lg: "px-6 py-3 text-base",
   };
 
-  // Cursor blink effect
   useEffect(() => {
-    // Only apply blinking cursor if animations aren't reduced
     if (reducedAnimations) {
       setCursorBlink(true);
       return;

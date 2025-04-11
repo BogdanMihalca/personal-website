@@ -7,6 +7,12 @@ const nextConfig: NextConfig = {
       {
         hostname: "widgets.astronomyapi.com",
       },
+      {
+        hostname: "via.placeholder.com",
+      },
+      {
+        hostname: 'picsum.photos'
+      }
     ],
   },
 };

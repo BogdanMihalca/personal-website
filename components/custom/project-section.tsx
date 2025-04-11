@@ -31,7 +31,6 @@ interface Project {
   featured?: boolean;
 }
 
-// Sample projects data
 const projects: Project[] = [
   {
     id: "fake-news-detector",

@@ -19,10 +19,9 @@ export const GlitchText: FC<GlitchTextProps> = ({
   const [glitchActive, setGlitchActive] = useState(false);
   const { reducedAnimations } = usePerformanceMode();
 
-  // Get interval timing based on intensity and performance mode
   const getGlitchInterval = useCallback(() => {
     if (reducedAnimations) {
-      return 10000; // Very infrequent in performance mode
+      return 10000;
     }
 
     switch (intensity) {
@@ -36,9 +35,7 @@ export const GlitchText: FC<GlitchTextProps> = ({
   }, [intensity, reducedAnimations]);
 
   useEffect(() => {
-    // Skip or reduce glitch animations based on performance mode
     if (reducedAnimations) {
-      // Minimal glitches with very infrequent intervals
       const glitchInterval = setInterval(() => {
         if (Math.random() > 0.7) {
           setGlitchActive(true);
@@ -49,7 +46,6 @@ export const GlitchText: FC<GlitchTextProps> = ({
       return () => clearInterval(glitchInterval);
     }
 
-    // Normal animation mode
     const glitchInterval = setInterval(() => {
       const randomNum = Math.random();
       if (randomNum > 0.6) {

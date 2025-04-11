@@ -10,7 +10,6 @@ interface RainEffectProps {
   className?: string;
 }
 
-// Move Drop class outside of useEffect to prevent recreation
 class Drop {
   x: number;
   y: number;
@@ -30,7 +29,6 @@ class Drop {
     this.canvas = canvas;
     this.ctx = ctx;
     this.baseColor = baseColor;
-    // Initialize with default values (will be replaced in reset())
     this.x = 0;
     this.y = 0;
     this.length = 0;
@@ -61,7 +59,6 @@ class Drop {
   update(): void {
     this.y += this.speed;
 
-    // Reset drop when it goes off screen
     if (this.y > this.canvas.height) {
       this.reset();
     }
@@ -80,10 +77,8 @@ export const RainEffect = ({
   const dropsRef = useRef<Drop[]>([]);
   const { reducedAnimations } = usePerformanceMode();
 
-  // Rain drop properties based on intensity
   const getDropCount = useCallback((): number => {
     if (reducedAnimations) {
-      // Reduce drop count in performance mode
       switch (intensity) {
         case "light":
           return 25;
@@ -94,7 +89,6 @@ export const RainEffect = ({
       }
     }
 
-    // Normal drop counts
     switch (intensity) {
       case "light":
         return 100;
@@ -123,13 +117,11 @@ export const RainEffect = ({
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Set canvas dimensions to match container
     const resizeCanvas = (): void => {
       const { width, height } = canvas.getBoundingClientRect();
       canvas.width = width;
       canvas.height = height;
 
-      // Reinitialize drops with new dimensions
       initDrops();
     };
 
@@ -137,10 +129,8 @@ export const RainEffect = ({
       const dropCount = getDropCount();
       const baseColor = getDropColor();
 
-      // Clear previous drops
       dropsRef.current = [];
 
-      // Create new drops with current dimensions
       for (let i = 0; i < dropCount; i++) {
         dropsRef.current.push(new Drop(canvas, ctx, baseColor));
       }
@@ -149,18 +139,14 @@ export const RainEffect = ({
     resizeCanvas();
     window.addEventListener("resize", resizeCanvas);
 
-    // Animation loop with better performance
     const render = (): void => {
-      // In reduced performance mode, clear less frequently
       if (!reducedAnimations || Math.random() > 0.5) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
       }
 
-      // Add a slight blur for glow effect - reduce or remove in performance mode
       ctx.shadowBlur = reducedAnimations ? 2 : 5;
       ctx.shadowColor = getDropColor();
 
-      // Update fewer drops per frame in performance mode
       const updateCount = reducedAnimations
         ? Math.ceil(dropsRef.current.length / 2)
         : dropsRef.current.length;
@@ -169,7 +155,6 @@ export const RainEffect = ({
         dropsRef.current[i].update();
       }
 
-      // Throttle framerate in performance mode
       if (reducedAnimations) {
         setTimeout(() => {
           animationRef.current = requestAnimationFrame(render);
@@ -181,7 +166,6 @@ export const RainEffect = ({
 
     render();
 
-    // Cleanup
     return () => {
       window.removeEventListener("resize", resizeCanvas);
       cancelAnimationFrame(animationRef.current);

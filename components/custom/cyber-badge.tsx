@@ -89,7 +89,6 @@ const CyberBadge = ({
     }
   };
 
-  // Generate a unique identifier for this badge
   const badgeId = `cyber-badge-${Math.random().toString(36).substring(2, 9)}`;
 
   return (

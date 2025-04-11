@@ -20,13 +20,11 @@ const CyberpunkHero = () => {
   const { reducedAnimations } = usePerformanceMode();
 
   useEffect(() => {
-    // Skip all glitch effects if reduced animations is on
     if (reducedAnimations) {
       setGlitchEffect(false);
       return;
     }
 
-    // Normal animation mode
     const glitchInterval = setInterval(() => {
       if (Math.random() > 0.85) {
         setGlitchEffect(true);

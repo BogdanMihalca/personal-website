@@ -15,30 +15,24 @@ const CyberpunkDisplay: FC<{
   const { reducedAnimations } = usePerformanceMode();
 
   useEffect(() => {
-    // If reducedAnimations is true, disable all animations by not setting up intervals
     if (reducedAnimations) {
       return () => {};
     }
 
-    // Normal animation mode
     const glitchController = setInterval(() => {
-      // Determine which type of glitch to trigger
       const glitchType = Math.random();
 
       if (glitchType < 0.6) {
-        // Minor glitch (more common)
         setGlitchActive(true);
         setTimeout(() => setGlitchActive(false), 100 + Math.random() * 200);
       } else if (glitchType < 0.8) {
-        // Header glitch (less common)
         setHeaderGlitch(true);
         setTimeout(() => setHeaderGlitch(false), 150);
       } else {
-        // Hard glitch (rare)
         setHardGlitch(true);
         setTimeout(() => setHardGlitch(false), 250);
       }
-    }, 1000 + Math.random() * 2000); // Consolidated interval timing
+    }, 1000 + Math.random() * 2000);
 
     return () => clearInterval(glitchController);
   }, [reducedAnimations]);
@@ -53,14 +47,11 @@ const CyberpunkDisplay: FC<{
       .join("");
   };
 
-  // Helper function to conditionally render animations
   const getAnimationProps = (animType: string) => {
     if (reducedAnimations) {
-      // Return empty/static props when reducedAnimations is true
       return {};
     }
 
-    // Return proper animation props based on type
     switch (animType) {
       case "scanline":
         return {

@@ -28,7 +28,6 @@ const DataStream = ({
 }: DataStreamProps) => {
   const { reducedAnimations } = usePerformanceMode();
 
-  // If reducedAnimations is enabled, reduce the character count significantly
   const actualCharCount = reducedAnimations
     ? Math.min(10, charCount)
     : charCount;
@@ -53,7 +52,6 @@ const DataStream = ({
     fast: 5,
   };
 
-  // Slow down animations dramatically in reduced animations mode
   const actualDuration = reducedAnimations
     ? speedDuration[speed] * 3
     : speedDuration[speed];

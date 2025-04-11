@@ -24,15 +24,13 @@ export const useWeatherData = (city: string, refreshInterval = 300000) => {
     try {
       setIsLoading(true);
 
-      // In a real implementation, you would fetch from an actual weather API
-      // For demonstration, we'll simulate an API call with a timeout
+
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      // Mock weather data - replace with actual API call
       const mockWeatherConditions = ["clear", "cloudy", "rain", "fog", "storm"];
       const randomCondition =
         mockWeatherConditions[
-          Math.floor(Math.random() * mockWeatherConditions.length)
+        Math.floor(Math.random() * mockWeatherConditions.length)
         ];
 
       const intensities: Array<"light" | "moderate" | "heavy"> = [
@@ -70,7 +68,6 @@ export const useWeatherData = (city: string, refreshInterval = 300000) => {
     }
   };
 
-  // Initial fetch and refresh interval
   useEffect(() => {
     fetchWeatherData();
 

@@ -35,14 +35,12 @@ const MoonPhase = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         async (position) => {
-          console.log("Position:", position);
           try {
             const { latitude, longitude } = position.coords;
-            console.log("Latitude:", latitude, "Longitude:", longitude);
 
             const formattedLat = latitude.toFixed(4);
             const formattedLon = longitude.toFixed(4);
-            // Add artificial delay to simulate network latency
+
             await new Promise((resolve) => setTimeout(resolve, 1000));
 
             const response = await fetch(

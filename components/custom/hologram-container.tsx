@@ -26,14 +26,11 @@ export const HologramContainer = ({
   const [glitchTiming, setGlitchTiming] = useState(0);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
-  // Adjust intensity based on performance mode
   const effectiveIntensity = reducedAnimations ? "low" : intensity;
 
-  // Adjust interactivity based on performance mode
   const effectiveInteractive = reducedAnimations ? false : interactive;
 
   useEffect(() => {
-    // If reduced animations, use longer intervals for glitch effect
     const intervalTime =
       effectiveIntensity === "high"
         ? 2000 + Math.random() * 2000

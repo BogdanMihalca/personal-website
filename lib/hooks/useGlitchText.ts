@@ -87,16 +87,13 @@ const useGlitchText = (options: GlitchTextOptions) => {
   const intervalRef = useRef<number | null>(null);
   const isGlitching = useRef<boolean>(false);
 
-  // Update original text if the input text changes
   useEffect(() => {
     originalText.current = text;
-    // Only update display text if we're not currently glitching
     if (!isGlitching.current) {
       setDisplayText(text);
     }
   }, [text]);
 
-  // Create a corrupted version of the text
   const corruptText = useCallback(
     (inputText: string): string => {
       return inputText
@@ -111,34 +108,28 @@ const useGlitchText = (options: GlitchTextOptions) => {
     [characterCorruptionRate, specialChars]
   );
 
-  // Apply a single glitch effect
   const applyGlitch = useCallback(() => {
-    // Only glitch sometimes based on probability
     if (Math.random() > glitchProbability || isGlitching.current) return;
 
     isGlitching.current = true;
     const corruptedText = corruptText(originalText.current);
     setDisplayText(corruptedText);
 
-    // Reset after duration
     setTimeout(() => {
       setDisplayText(originalText.current);
       isGlitching.current = false;
     }, glitchDuration);
   }, [corruptText, glitchProbability, glitchDuration]);
 
-  // Internal function to clear the interval
   const clearGlitchInterval = useCallback(() => {
     if (intervalRef.current !== null) {
       window.clearInterval(intervalRef.current);
       intervalRef.current = null;
     }
-    // Reset to original text
     setDisplayText(originalText.current);
     isGlitching.current = false;
   }, []);
 
-  // Start the glitch effect
   const start = useCallback(() => {
     if (intervalRef.current !== null) return;
 
@@ -146,13 +137,11 @@ const useGlitchText = (options: GlitchTextOptions) => {
     setIsRunning(true);
   }, [applyGlitch, interval]);
 
-  // Stop the glitch effect
   const stop = useCallback(() => {
     clearGlitchInterval();
     setIsRunning(false);
   }, [clearGlitchInterval]);
 
-  // Force a glitch now
   const glitchNow = useCallback(() => {
     if (!isGlitching.current && !reducedAnimations) {
       isGlitching.current = true;
@@ -166,9 +155,7 @@ const useGlitchText = (options: GlitchTextOptions) => {
     }
   }, [corruptText, glitchDuration, reducedAnimations]);
 
-  // Set up and clean up the interval
   useEffect(() => {
-    // Don't run the glitching effect if reduced animations is enabled
     if (reducedAnimations) {
       clearGlitchInterval();
       setIsRunning(false);
@@ -184,7 +171,6 @@ const useGlitchText = (options: GlitchTextOptions) => {
     return clearGlitchInterval;
   }, [isRunning, start, clearGlitchInterval, reducedAnimations]);
 
-  // If reducedAnimations is enabled, always return the original text
   return {
     text: reducedAnimations ? originalText.current : displayText,
     isRunning: reducedAnimations ? false : isRunning,

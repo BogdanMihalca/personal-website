@@ -1,11 +1,15 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
-import { CyberpunkLogo } from "./cyber-logo/cyber-logo";
 import { orbitron } from "@/app/fonts";
+import { usePerformanceMode } from "@/lib/contexts/performance-mode";
 import { useHash } from "@/lib/hooks/useHash";
 import { scrollToSection } from "@/lib/utils";
-import { usePerformanceMode } from "@/lib/contexts/performance-mode";
 import { Battery, BatteryCharging } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
+import { BlogCategories } from "./blog-categories";
+import { CyberpunkLogo } from "./cyber-logo/cyber-logo";
+import { LoginButton } from "./login-button";
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -13,6 +17,9 @@ const Navbar = () => {
   const [activeSection, setActiveSection] = useState("home");
   const hash = useHash();
   const { reducedAnimations, togglePerformanceMode } = usePerformanceMode();
+  const pathname = usePathname();
+
+  const isBlogPage = pathname?.startsWith("/blog");
 
   const handleScroll = useCallback(() => {
     if (window.scrollY > 10) {
@@ -33,12 +40,19 @@ const Navbar = () => {
 
   // based on hash change, set the active section
   useEffect(() => {
+    if (isBlogPage) {
+      setActiveSection("blog");
+      return;
+    }
+
     const section = hash.replace("#", "");
     if (section) {
       scrollToSection(section);
       setActiveSection(section);
+    } else {
+      setActiveSection("home");
     }
-  }, [hash]);
+  }, [hash, isBlogPage, pathname]);
 
   return (
     <nav
@@ -57,20 +71,39 @@ const Navbar = () => {
             />
           </div>
 
-          <div className="hidden md:flex space-x-8 mr-12">
-            {["home", "about", "projects", "contact"].map((section) => (
-              <a
-                key={section}
-                href={`#${section}`}
-                className={`nav-link uppercase text-sm tracking-wider hover:text-cyan-400 transition-colors duration-300 ${
-                  activeSection === section
-                    ? "text-cyan-400 font-medium"
-                    : "text-gray-300"
-                }`}
-              >
-                {section}
-              </a>
-            ))}
+          <div className="hidden md:flex space-x-8 mr-12 items-center">
+            {!isBlogPage && (
+              <>
+                {["home", "about", "projects", "contact"].map((section) => (
+                  <Link
+                    key={section}
+                    href={`/#${section}`}
+                    className={`nav-link uppercase text-sm tracking-wider hover:text-cyan-400 transition-colors duration-300 ${
+                      activeSection === section
+                        ? "text-cyan-400 font-medium"
+                        : "text-gray-300"
+                    }`}
+                  >
+                    {section}
+                  </Link>
+                ))}
+                <Link href={"/blog"} className="nav-link">
+                  <span
+                    className={`text-sm tracking-wider hover:text-cyan-400 transition-colors duration-300 ${
+                      activeSection === "blog"
+                        ? "text-cyan-400 font-medium"
+                        : "text-gray-300"
+                    }`}
+                  >
+                    BLOG
+                  </span>
+                </Link>
+              </>
+            )}
+
+            {isBlogPage && <BlogCategories />}
+
+            {isBlogPage && <LoginButton />}
           </div>
 
           <div className="md:hidden flex items-center">
@@ -126,10 +159,11 @@ const Navbar = () => {
         <div className="md:hidden bg-black bg-opacity-70 backdrop-blur-md border-t border-cyan-500/30 shadow-lg shadow-cyan-500/20">
           <div className="container mx-auto px-4 py-4">
             <div className="flex flex-col space-y-4">
+              {isBlogPage && <LoginButton />}
               {["home", "about", "projects", "contact"].map((section) => (
                 <a
                   key={section}
-                  href={`#${section}`}
+                  href={`/#${section}`}
                   onClick={() => setMenuOpen(false)}
                   className={`uppercase text-sm tracking-wider transition-colors duration-300 py-2 ${
                     activeSection === section
@@ -140,6 +174,23 @@ const Navbar = () => {
                   {section}
                 </a>
               ))}
+              <Link
+                href="/blog"
+                onClick={() => setMenuOpen(false)}
+                className={`uppercase text-sm tracking-wider transition-colors duration-300 py-2 ${
+                  activeSection === "blog"
+                    ? "text-cyan-400 font-medium border-l-2 border-cyan-400 pl-3"
+                    : "text-gray-300 hover:text-cyan-400 hover:border-l-2 hover:border-cyan-400/50 hover:pl-3"
+                }`}
+              >
+                Blog
+              </Link>
+
+              {isBlogPage && (
+                <div className="pl-3 py-2 border-l-2 border-cyan-400/30">
+                  <BlogCategories mobile={true} />
+                </div>
+              )}
             </div>
           </div>
         </div>

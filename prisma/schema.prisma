@@ -1,0 +1,220 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Post {
+  id          Int           @id @default(autoincrement())
+  title       String
+  slug        String        @unique
+  content     Json?
+  shortDesc   String?
+  mainImage   String?
+  featured    Boolean       @default(false)
+  published   Boolean       @default(false)
+  status      PostStatus    @default(DRAFT)
+  viewCount   Int           @default(0)
+  likeCount   Int           @default(0)
+  shareCount  Int           @default(0)
+  readingTime Int?
+  authorId    String
+  author      User          @relation(fields: [authorId], references: [id])
+  category    Category?     @relation(fields: [categoryId], references: [id])
+  categoryId  Int?
+  comments    Comment[]
+  tags        TagsOnPosts[]
+  views       PostView[]
+  likes       PostLike[]
+  seo         PostSEO?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  publishedAt DateTime?
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+  SCHEDULED
+}
+
+model PostView {
+  id        Int      @id @default(autoincrement())
+  postId    Int
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  ipAddress String?
+  userAgent String?
+  referrer  String?
+  duration  Int?
+  createdAt DateTime @default(now())
+}
+
+model PostLike {
+  id        Int      @id @default(autoincrement())
+  postId    Int
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([postId, userId])
+}
+
+model PostSEO {
+  id           Int     @id @default(autoincrement())
+  postId       Int     @unique
+  post         Post    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  metaTitle    String?
+  metaDesc     String?
+  ogTitle      String?
+  ogDesc       String?
+  ogImage      String?
+  keywords     String?
+  canonicalUrl String?
+}
+
+model Category {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  slug        String   @unique
+  description String?
+  image       String?
+  posts       Post[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Tag {
+  id        Int           @id @default(autoincrement())
+  name      String        @unique
+  slug      String        @unique
+  posts     TagsOnPosts[]
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+}
+
+model TagsOnPosts {
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId    Int
+  tag       Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  tagId     Int
+  createdAt DateTime @default(now())
+
+  @@id([postId, tagId])
+}
+
+model Comment {
+  id        Int           @id @default(autoincrement())
+  content   String
+  postId    Int
+  post      Post          @relation(fields: [postId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User          @relation(fields: [authorId], references: [id])
+  status    CommentStatus @default(PENDING)
+  parentId  Int?
+  parent    Comment?      @relation("CommentToComment", fields: [parentId], references: [id])
+  replies   Comment[]     @relation("CommentToComment")
+  likeCount Int           @default(0)
+  likes     CommentLike[]
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+}
+
+enum CommentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  SPAM
+}
+
+model CommentLike {
+  id        Int      @id @default(autoincrement())
+  commentId Int
+  comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([commentId, userId])
+}
+
+model Subscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  verified  Boolean  @default(false)
+  token     String?  @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model User {
+  id            String        @id @default(cuid())
+  email         String        @unique
+  name          String?
+  posts         Post[]
+  comments      Comment[]
+  commentLikes  CommentLike[]
+  postLikes     PostLike[]
+  postViews     PostView[]
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  role          UserRole      @default(USER)
+  newsletterSub Boolean       @default(false)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+enum UserRole {
+  USER
+  AUTHOR
+  EDITOR
+  ADMIN
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@id([identifier, token])
+}

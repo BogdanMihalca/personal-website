@@ -7,9 +7,7 @@ const EnergyMouseField = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const { reducedAnimations } = usePerformanceMode();
 
-  // Skip this effect entirely in performance mode
   useEffect(() => {
-    // Don't track mouse movements in performance mode
     if (reducedAnimations) return;
 
     const onMouseMove = (event: MouseEvent) => {
@@ -17,7 +15,6 @@ const EnergyMouseField = () => {
       const newX = event.clientX - rect.left;
       const newY = event.clientY - rect.top;
 
-      // Increase movement threshold in performance mode to reduce updates
       const threshold = 5;
 
       if (
@@ -34,7 +31,6 @@ const EnergyMouseField = () => {
     };
   }, [mousePosition.x, mousePosition.y, reducedAnimations]);
 
-  // Don't render anything in performance mode
   if (reducedAnimations) return null;
 
   return (
