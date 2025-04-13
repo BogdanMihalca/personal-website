@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { BlogSidebar } from "@/components/custom/blog-filers-sidebar";
 import { DecoDivider } from "@/components/custom/deco-divider";
 import { GlitchText } from "@/components/custom/glitch-text";
@@ -10,14 +11,8 @@ import {
 import { notFound } from "next/navigation";
 
 interface CategoryPageProps {
-  params: {
-    slug: string;
-  };
-  searchParams: {
-    page?: string;
-    q?: string;
-    tags?: string;
-  };
+  params: any;
+  searchParams: any;
 }
 
 export async function generateMetadata({ params }: CategoryPageProps) {

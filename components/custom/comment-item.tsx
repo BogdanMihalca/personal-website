@@ -24,13 +24,6 @@ export function CommentItem({
   const [isEditing, setIsEditing] = useState<boolean | number>(false);
   const [isReplying, setIsReplying] = useState(false);
 
-  console.log("CommentItem", {
-    comment,
-    session,
-    likedCommentIds,
-    postId,
-  });
-
   return (
     <div className="border border-zinc-500/50 rounded-lg p-4 bg-black/30 backdrop-blur-sm">
       <div className="flex items-start space-x-3">

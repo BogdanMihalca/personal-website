@@ -19,8 +19,6 @@ export async function BlogPostComments({
   comments,
   path,
 }: BlogPostCommentsProps) {
-  console.log("BlogPostComments", { postId, comments, path });
-
   const session = await auth();
 
   // Extract all comment IDs including replies

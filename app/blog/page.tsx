@@ -7,12 +7,7 @@ import { SideDisplay } from "@/components/custom/side-display";
 import { Filter } from "lucide-react";
 
 interface BlogPageProps {
-  searchParams: {
-    page?: string;
-    q?: string;
-    categories?: string;
-    tags?: string;
-  };
+  searchParams: any; //eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
 const POSTS_PER_PAGE = 3;

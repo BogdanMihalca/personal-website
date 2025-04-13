@@ -38,9 +38,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 interface PostDetailPageProps {
-  params: {
-    slug: string;
-  };
+  params: any; //eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
 export async function generateMetadata({
