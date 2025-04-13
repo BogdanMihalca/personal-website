@@ -63,7 +63,7 @@ export function CyberPagination({
             : undefined
         }
         disabled={currentPage <= 1}
-        className="relative group border border-zinc-800 bg-black/50 hover:bg-purple-900/20 hover:border-purple-500/50 disabled:opacity-50"
+        className="relative group border border-zinc-800 bg-black/50 hover:bg-purple-900/20 hover:border-purple-500/50 disabled:opacity-50 cursor-pointer"
       >
         <div className="absolute inset-0 bg-purple-500/20 blur-sm opacity-0 group-hover:opacity-100 transition-opacity" />
 
@@ -88,7 +88,7 @@ export function CyberPagination({
                 className={`relative group min-w-[2.5rem] border ${
                   currentPage === pageNum
                     ? "bg-purple-900/30 border-purple-500/50 text-purple-200"
-                    : "border-zinc-800 bg-black/50 hover:bg-purple-900/20 hover:border-purple-500/50 text-zinc-400 hover:text-purple-300"
+                    : "border-zinc-800 bg-black/50 hover:bg-purple-900/20 hover:border-purple-500/50 text-zinc-400 hover:text-purple-300 cursor-pointer"
                 }`}
               >
                 <div className="absolute inset-0 bg-purple-500/20 blur-sm opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -109,7 +109,7 @@ export function CyberPagination({
             : undefined
         }
         disabled={currentPage >= totalPages}
-        className="relative group border border-zinc-800 bg-black/50 hover:bg-purple-900/20 hover:border-purple-500/50 disabled:opacity-50"
+        className="relative group border border-zinc-800 bg-black/50 hover:bg-purple-900/20 hover:border-purple-500/50 disabled:opacity-50 cursor-pointer"
       >
         <div className="absolute inset-0 bg-purple-500/20 blur-sm opacity-0 group-hover:opacity-100 transition-opacity" />
 

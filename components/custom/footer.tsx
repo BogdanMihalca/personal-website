@@ -143,22 +143,20 @@ const Footer = () => {
               TECH_STACK://
             </h3>
             <div className="flex flex-wrap gap-2">
-              {["React", "Next.js", "TypeScript", "TailwindCSS"].map(
-                (tech, i) => (
-                  <CyberBadge
-                    key={tech}
-                    variant={
-                      ["default", "neon", "holo", "circuit" as const][
-                        i % 4
-                      ] as any //eslint-disable-line @typescript-eslint/no-explicit-any
-                    }
-                    delay={i}
-                    className="text-xs py-0 px-1.5"
-                  >
-                    {tech}
-                  </CyberBadge>
-                )
-              )}
+              {["React", "Next.js", "TypeScript", "SCSS"].map((tech, i) => (
+                <CyberBadge
+                  key={tech}
+                  variant={
+                    ["default", "neon", "holo", "circuit" as const][
+                      i % 4
+                    ] as any //eslint-disable-line @typescript-eslint/no-explicit-any
+                  }
+                  delay={i}
+                  className="text-xs py-0 px-1.5"
+                >
+                  {tech}
+                </CyberBadge>
+              ))}
             </div>
           </div>
 

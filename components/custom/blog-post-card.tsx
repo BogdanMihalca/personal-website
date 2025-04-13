@@ -15,11 +15,13 @@ export interface BlogPost {
   mainImage: string;
   category: string;
   tags: string[];
-  viewCount: number;
   featured: boolean;
   createdAt: string;
   authorName: string;
   authorImage: string;
+  _count: {
+    views: number;
+  };
 }
 
 export function BlogPostCard({
@@ -59,7 +61,7 @@ export function BlogPostCard({
               {post.category}
             </Badge>
             <div className="flex items-center text-zinc-500 text-xs">
-              <Eye className="h-3 w-3 mr-1" /> {post.viewCount.toLocaleString()}
+              <Eye className="h-3 w-3 mr-1" /> {post._count.views}
             </div>
           </div>
 
@@ -105,7 +107,10 @@ export function BlogPostCard({
                 <Avatar>
                   <AvatarImage src={post.authorImage} alt={post.authorName} />
                   <AvatarFallback className="bg-black text-neon-pink font-mono">
-                    {post.authorName.charAt(0).toUpperCase()}
+                    {post.authorName
+                      ?.split(" ")
+                      .map((n) => n.charAt(0).toUpperCase())
+                      .join("") || "A"}
                   </AvatarFallback>
                 </Avatar>
               </div>
@@ -151,7 +156,7 @@ export function FeaturedPostCard({ post }: { post: BlogPost }) {
         <div className="flex items-center justify-between text-xs pt-2 border-t border-zinc-800/30">
           <span className="text-zinc-400">{post.authorName}</span>
           <div className="flex items-center text-zinc-500">
-            <Eye className="h-3 w-3 mr-1" /> {post.viewCount.toLocaleString()}
+            <Eye className="h-3 w-3 mr-1" /> {post._count.views}
           </div>
         </div>
       </div>

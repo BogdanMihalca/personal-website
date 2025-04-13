@@ -1,3 +1,4 @@
+"use client";
 import { useGlitchText } from "@/lib/hooks/useGlitchText";
 import { useState, useEffect } from "react";
 import { usePerformanceMode } from "@/lib/contexts/performance-mode";

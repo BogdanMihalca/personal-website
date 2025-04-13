@@ -1,4 +1,4 @@
-import BlogSidebar from "@/components/custom/blog-filers-sidebar";
+import { BlogSidebar } from "@/components/custom/blog-filers-sidebar";
 import { DecoDivider } from "@/components/custom/deco-divider";
 import { GlitchText } from "@/components/custom/glitch-text";
 import { SuspenseCategoryPostsList } from "@/components/custom/blog-post-fetcher";

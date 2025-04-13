@@ -20,6 +20,7 @@ export function BlogPostList({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const searchQuery = searchParams.get("q") || "";
 
   const handlePageChange = (page: number) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -27,8 +28,68 @@ export function BlogPostList({
     router.push(`${pathname}?${params}`);
   };
 
+  const pathParts = pathname.split("/");
+  const isCategoryPage = pathParts.includes("category");
+  const categoryName =
+    isCategoryPage && pathParts.length > 3
+      ? initialPosts[0]?.category || ""
+      : "";
+
+  const renderInfoDisplay = () => {
+    const totalPosts =
+      initialPosts.length > 0 ? initialPosts.length * totalPages : 0;
+
+    const hasFilters = searchQuery || isCategoryPage;
+
+    const clearFiltersButton = hasFilters && (
+      <Link
+        href="/blog"
+        className="ml-2 text-purple-500 hover:text-purple-400 text-sm transition-all duration-200 inline-flex items-center"
+      >
+        <span>Clear filters</span>
+        <span className="ml-1 text-xs">&times;</span>
+      </Link>
+    );
+
+    if (searchQuery) {
+      return (
+        <div className="text-zinc-400 text-sm mb-4 flex items-center">
+          <span>
+            Found {totalPosts} {totalPosts === 1 ? "result" : "results"}
+            for &quot;{searchQuery}&quot;
+            {categoryName ? ` in ${categoryName}` : ""}
+          </span>
+          {clearFiltersButton}
+        </div>
+      );
+    } else if (currentPage > 1) {
+      return (
+        <div className="text-zinc-400 text-sm mb-4 flex items-center">
+          <span>
+            Page {currentPage} of {totalPages}
+          </span>
+          {clearFiltersButton}
+        </div>
+      );
+    } else if (totalPosts > 0) {
+      return (
+        <div className="text-zinc-400 text-sm mb-4 flex items-center">
+          <span>
+            Showing {totalPosts} {totalPosts === 1 ? "post" : "posts"}
+            {categoryName ? ` in ${categoryName}` : ""}
+          </span>
+          {clearFiltersButton}
+        </div>
+      );
+    }
+
+    return null;
+  };
+
   return (
     <div className="space-y-8">
+      {renderInfoDisplay()}
+
       {initialPosts.length > 0 ? (
         <div className="space-y-6 relative">
           <div className="absolute inset-0 bg-gradient-to-b from-purple-500/5 to-transparent opacity-50 pointer-events-none" />

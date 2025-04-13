@@ -30,6 +30,7 @@ export default function RootLayout({
           <PerformanceProvider>
             <div className="min-h-screen bg-black text-gray-100 relative overflow-x-hidden pt-10 lg:pt-0">
               <div className="fixed inset-0 bg-space-grid opacity-20 z-0" />
+
               <EnergyMouseField />
               <AnimatedStars />
               <Navbar />
@@ -37,10 +38,13 @@ export default function RootLayout({
               <Terminal />
               <Footer />
               <CookiePolicy />
+              <Toaster
+                position="bottom-right"
+                offset={{ bottom: 50, right: 100 }}
+              />
             </div>
           </PerformanceProvider>
         </SessionProvider>
-        <Toaster />
       </body>
     </html>
   );

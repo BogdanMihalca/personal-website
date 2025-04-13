@@ -20,6 +20,7 @@ const Navbar = () => {
   const pathname = usePathname();
 
   const isBlogPage = pathname?.startsWith("/blog");
+  console.log("isBlogPage", isBlogPage);
 
   const handleScroll = useCallback(() => {
     if (window.scrollY > 10) {
