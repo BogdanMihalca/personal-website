@@ -16,6 +16,7 @@ model Post {
   mainImage   String?
   featured    Boolean       @default(false)
   published   Boolean       @default(false)
+  autoGenAI   Boolean       @default(false)
   status      PostStatus    @default(DRAFT)
   shareCount  Int           @default(0)
   readingTime Int?

@@ -22,13 +22,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
+
 import { Card } from "@/components/ui/card";
 import {
   Eye,
@@ -49,6 +43,7 @@ import {
 import { PostStatus } from "@prisma/client";
 import { CyberpunkButton } from "./cyber-button";
 import { DeleteDialog } from "@/components/custom/table-utils";
+import { CyberPagination } from "./cyber-pagination";
 
 interface PostsTableProps {
   userId: string;
@@ -432,37 +427,11 @@ export function PostsTable({ userId, isAdmin }: PostsTableProps) {
       )}
 
       {totalPages > 1 && (
-        <div className="flex justify-center mt-4">
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
-                  onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  aria-disabled={page === 1}
-                  className={
-                    page === 1
-                      ? "opacity-50 cursor-not-allowed"
-                      : "cursor-pointer"
-                  }
-                />
-              </PaginationItem>
-              <PaginationItem>
-                Page {page} of {totalPages}
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationNext
-                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                  aria-disabled={page === totalPages}
-                  className={
-                    page === totalPages
-                      ? "opacity-50 cursor-not-allowed"
-                      : "cursor-pointer"
-                  }
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        </div>
+        <CyberPagination
+          currentPage={page}
+          totalPages={totalPages}
+          onPageChange={setPage}
+        />
       )}
 
       <DeleteDialog

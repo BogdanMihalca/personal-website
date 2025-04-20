@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Table,
   TableBody,
@@ -25,20 +25,24 @@ import { CommentStatus } from "@prisma/client";
 import { RefreshCw, Search, Check, X, Ban, Eye, Trash } from "lucide-react";
 import { toast } from "sonner";
 import { CyberpunkButton } from "./cyber-button";
-import {
-  useTableDialogs,
-  useTableSearch,
-  DeleteDialog,
-} from "@/components/custom/table-utils";
+import { useTableDialogs, DeleteDialog } from "@/components/custom/table-utils";
 import { formatRelativeTime } from "@/lib/utils";
 import { Badge } from "../ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import Link from "next/link";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   getAllComments,
   updateCommentStatus,
   deleteComment,
 } from "@/lib/db-actions/comment-actions";
+import { CyberPagination } from "./cyber-pagination";
 
 interface Comment {
   id: number;
@@ -68,12 +72,21 @@ interface Comment {
 
 export function CommentsTable() {
   const [comments, setComments] = useState<Comment[]>([]);
+  const [totalComments, setTotalComments] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [previewComment, setPreviewComment] = useState<Comment | null>(null);
   const [statusUpdateLoading, setStatusUpdateLoading] = useState<number | null>(
     null
   );
+  const [page, setPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState<
+    CommentStatus | undefined
+  >(undefined);
+
+  const COMMENTS_PER_PAGE = 10;
+  const totalPages = Math.ceil(totalComments / COMMENTS_PER_PAGE);
 
   const {
     itemToDelete: commentToDelete,
@@ -85,15 +98,30 @@ export function CommentsTable() {
     confirmDelete,
   } = useTableDialogs<any>();
 
-  const {
-    searchQuery,
-    setSearchQuery,
-    filteredItems: filteredComments,
-  } = useTableSearch(comments, ["content"]);
+  // Load comments when dependencies change
+  const loadComments = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const { comments: fetchedComments, totalComments: total } =
+        await getAllComments({
+          skip: (page - 1) * COMMENTS_PER_PAGE,
+          take: COMMENTS_PER_PAGE,
+          status: selectedStatus,
+          searchQuery,
+        });
+      setComments(fetchedComments);
+      setTotalComments(total);
+    } catch (error) {
+      console.error("Error loading comments:", error);
+      toast.error("Failed to load comments");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [page, searchQuery, selectedStatus]);
 
   useEffect(() => {
     loadComments();
-  }, []);
+  }, [loadComments]);
 
   useEffect(() => {
     if (deleteResult) {
@@ -106,20 +134,7 @@ export function CommentsTable() {
         toast.error(deleteResult.message);
       }
     }
-  }, [deleteResult, setIsDeleteDialogOpen, setCommentToDelete]);
-
-  async function loadComments() {
-    setIsLoading(true);
-    try {
-      const data = await getAllComments();
-      setComments(data);
-    } catch (error) {
-      console.error("Error loading comments:", error);
-      toast.error("Failed to load comments");
-    } finally {
-      setIsLoading(false);
-    }
-  }
+  }, [deleteResult, setIsDeleteDialogOpen, setCommentToDelete, loadComments]);
 
   async function handleDeleteComment() {
     if (!commentToDelete) return;
@@ -144,12 +159,8 @@ export function CommentsTable() {
     try {
       await updateCommentStatus(commentId, newStatus);
 
-      // Update local state
-      setComments(
-        comments.map((comment) =>
-          comment.id === commentId ? { ...comment, status: newStatus } : comment
-        )
-      );
+      // Reload comments to get fresh data
+      loadComments();
 
       toast.success(`Comment ${newStatus.toLowerCase()} successfully`);
     } catch (error) {
@@ -262,12 +273,58 @@ export function CommentsTable() {
           <Button
             variant="outline"
             size="icon"
-            onClick={loadComments}
+            onClick={() => loadComments()}
             title="Refresh"
             className="border border-neon-cyan/30 bg-space-black/80 text-neon-cyan hover:bg-neon-cyan/20 hover:text-neon-cyan hover:border-neon-cyan/60"
           >
             <RefreshCw className="h-4 w-4" />
           </Button>
+        </div>
+
+        <div className="flex gap-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                className="bg-space-black/80 border-neon-cyan/50 text-neon-cyan hover:bg-neon-cyan/20 hover:border-neon-cyan/70 hover:text-neon-cyan/70"
+              >
+                {selectedStatus ? selectedStatus : "All Status"}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="bg-space-black/90 backdrop-blur-md border-neon-cyan/40">
+              <DropdownMenuItem
+                onClick={() => setSelectedStatus(undefined)}
+                className="text-neon-cyan hover:text-white hover:bg-neon-cyan/10 focus:bg-neon-cyan/20 cursor-pointer"
+              >
+                All Status
+              </DropdownMenuItem>
+              <DropdownMenuSeparator className="bg-neon-cyan/20" />
+              <DropdownMenuItem
+                onClick={() => setSelectedStatus(CommentStatus.APPROVED)}
+                className="text-green-400 hover:text-white hover:bg-green-800/20 focus:bg-green-800/30 cursor-pointer"
+              >
+                Approved
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => setSelectedStatus(CommentStatus.PENDING)}
+                className="text-yellow-400 hover:text-white hover:bg-yellow-800/20 focus:bg-yellow-800/30 cursor-pointer"
+              >
+                Pending
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => setSelectedStatus(CommentStatus.REJECTED)}
+                className="text-red-400 hover:text-white hover:bg-red-800/20 focus:bg-red-800/30 cursor-pointer"
+              >
+                Rejected
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => setSelectedStatus(CommentStatus.SPAM)}
+                className="text-purple-400 hover:text-white hover:bg-purple-800/20 focus:bg-purple-800/30 cursor-pointer"
+              >
+                Spam
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
@@ -277,7 +334,7 @@ export function CommentsTable() {
             <RefreshCw className="h-8 w-8 animate-spin text-neon-cyan" />
           </Card>
         </div>
-      ) : filteredComments.length > 0 ? (
+      ) : comments.length > 0 ? (
         <div className="border border-neon-cyan/30 rounded-md bg-space-black/50 backdrop-blur-sm shadow-[0_0_15px_rgba(0,255,255,0.2)]">
           <Table variant="cyberpunk">
             <TableHeader variant="cyberpunk">
@@ -293,7 +350,7 @@ export function CommentsTable() {
               </TableRow>
             </TableHeader>
             <TableBody variant="cyberpunk">
-              {filteredComments.map((comment) => (
+              {comments.map((comment) => (
                 <TableRow variant="cyberpunk" key={comment.id}>
                   <TableCell variant="cyberpunk" className="whitespace-nowrap">
                     <div className="flex items-center space-x-2">
@@ -360,6 +417,14 @@ export function CommentsTable() {
         <Card className="w-full p-10 text-center bg-space-black/80 border-neon-cyan/30 text-neon-cyan backdrop-blur-md">
           No comments found.
         </Card>
+      )}
+
+      {totalPages > 1 && (
+        <CyberPagination
+          currentPage={page}
+          totalPages={totalPages}
+          onPageChange={setPage}
+        />
       )}
 
       <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>

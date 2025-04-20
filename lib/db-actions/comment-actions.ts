@@ -3,9 +3,39 @@
 import { CommentStatus } from "@prisma/client";
 import { prisma } from "../prisma";
 
-async function getAllComments() {
+async function getAllComments({
+    skip = 0,
+    take = 10,
+    status,
+    searchQuery = ""
+}: {
+    skip?: number;
+    take?: number;
+    status?: CommentStatus;
+    searchQuery?: string;
+} = {}) {
     try {
+        // Build the where clause based on filters
+        const where: Record<string, unknown> = {
+            ...(status ? { status } : {}),
+            ...(searchQuery
+                ? {
+                    OR: [
+                        { content: { contains: searchQuery, mode: "insensitive" } },
+                        { author: { name: { contains: searchQuery, mode: "insensitive" } } },
+                    ],
+                }
+                : {}),
+        };
+
+        // Get total count for pagination
+        const totalComments = await prisma.comment.count({ where });
+
+        // Get paginated comments
         const comments = await prisma.comment.findMany({
+            where,
+            skip,
+            take,
             select: {
                 id: true,
                 content: true,
@@ -48,7 +78,7 @@ async function getAllComments() {
             },
         });
 
-        return comments;
+        return { comments, totalComments };
     } catch (error) {
         console.error("Error getting all comments:", error);
         throw error;

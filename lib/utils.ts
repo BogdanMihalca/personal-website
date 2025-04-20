@@ -50,6 +50,22 @@ export const getRealIp = async (headers: Headers, cfProxy = false) => {
   return FALLBACK_IP_ADDRESS;
 }
 
+export async function isAuthorized(request: Request) {
+  const authHeader = request.headers.get('Authorization');
+
+  if (!authHeader) {
+    return false;
+  }
+
+  const [type, key] = authHeader.split(' ');
+
+  if (type !== 'Bearer' || !key) {
+    return false;
+  }
+
+  return key === process.env.AUTOMATION_API_KEY;
+}
+
 export const getRealUserAgent = (headers: Headers) => {
   if (headers.has('user-agent')) {
     return headers.get('user-agent') || 'unknown';
