@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Edit, Heart, MessageSquare, Trash } from "lucide-react";
-import { deleteComment, toggleCommentLike } from "@/lib/db-utils";
+import {
+  deleteCommentByAuthor,
+  toggleCommentLike,
+} from "@/lib/db-actions/comment-actions";
 import { Session } from "next-auth";
 import { Comment } from "@prisma/client";
 import { toast } from "sonner";
@@ -57,7 +60,7 @@ export function CommentActions({
 
     setIsDeleting(true);
     try {
-      await deleteComment(comment.id, session.user.id);
+      await deleteCommentByAuthor(comment.id, session.user.id);
       toast.success("Comment deleted successfully");
       router.refresh();
     } catch (error) {

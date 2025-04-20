@@ -21,13 +21,11 @@ export async function BlogPostComments({
 }: BlogPostCommentsProps) {
   const session = await auth();
 
-  // Extract all comment IDs including replies
   const commentIds = [
     ...comments.map((c) => c.id),
     ...comments.flatMap((c) => c.replies?.map((r: Comment) => r.id) || []),
   ];
 
-  // Pre-compute liked status for each comment
   let likedCommentIds: number[] = [];
 
   if (session?.user?.id) {
@@ -52,7 +50,9 @@ export async function BlogPostComments({
 
   return (
     <div className="mt-12 space-y-6 mb-8">
-      <GlitchText className="text-xl">Comments ({comments.length})</GlitchText>
+      <GlitchText className="text-xl">
+        Comments ({commentIds.length})
+      </GlitchText>
 
       {session?.user?.id ? (
         <div className="mb-8">

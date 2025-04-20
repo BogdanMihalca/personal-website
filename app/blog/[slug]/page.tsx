@@ -21,7 +21,7 @@ import {
   checkUserLikedPost,
   createPostView,
   getPostBySlug,
-} from "@/lib/db-utils";
+} from "@/lib/db-actions/post-actions";
 import { formatRelativeTime, getRealIp, getRealUserAgent } from "@/lib/utils";
 import {
   ChevronLeft,

@@ -39,8 +39,13 @@ function renderNode(node: ContentNode): React.ReactNode {
       );
 
     case "paragraph":
+      const textAlign = node.attrs?.textAlign;
+      const alignmentClass = textAlign ? `text-${textAlign}` : "";
+
       return (
-        <p className="text-zinc-300 leading-relaxed font-mono">
+        <p
+          className={`text-zinc-300 leading-relaxed font-mono ${alignmentClass}`}
+        >
           {node.content?.map((child, i) => (
             <React.Fragment key={i}>{renderNode(child)}</React.Fragment>
           ))}
@@ -106,8 +111,8 @@ function renderNode(node: ContentNode): React.ReactNode {
 
     case "codeBlock":
       return (
-        <pre className="bg-black/50 border border-zinc-800 rounded-md p-4 my-4 overflow-x-auto">
-          <code className="text-neon-cyan text-sm font-mono">
+        <pre className="bg-black/70 border border-neon-cyan/30 rounded-md p-4 my-4 overflow-x-auto shadow-[inset_0_0_8px_rgba(6,182,212,0.2)]">
+          <code className="text-neon-cyan text-sm font-mono block">
             {node.content?.map((child, i) => (
               <React.Fragment key={i}>{renderNode(child)}</React.Fragment>
             ))}
@@ -145,6 +150,16 @@ function renderNode(node: ContentNode): React.ReactNode {
                 {acc}
               </Link>
             );
+          case "highlight":
+            return (
+              <mark className="bg-neon-cyan/20 text-neon-cyan rounded px-1">
+                {acc}
+              </mark>
+            );
+          case "subscript":
+            return <sub>{acc}</sub>;
+          case "superscript":
+            return <sup>{acc}</sup>;
           default:
             return acc;
         }
@@ -171,6 +186,37 @@ function renderNode(node: ContentNode): React.ReactNode {
 
     case "horizontalRule":
       return <hr className="my-6 border-t border-zinc-800" />;
+
+    case "taskList":
+      return (
+        <ul className="list-none pl-0 space-y-2 my-4 text-zinc-300">
+          {node.content?.map((child, i) => (
+            <React.Fragment key={i}>{renderNode(child)}</React.Fragment>
+          ))}
+        </ul>
+      );
+
+    case "taskItem":
+      const checked = node.attrs?.checked;
+
+      return (
+        <li className="flex items-start gap-2">
+          <div
+            className={`mt-1 w-4 h-4 border rounded flex items-center justify-center ${
+              checked
+                ? "bg-neon-cyan/20 border-neon-cyan/50"
+                : "bg-black/30 border-zinc-700"
+            }`}
+          >
+            {checked && <span className="text-neon-cyan text-xs">✓</span>}
+          </div>
+          <div>
+            {node.content?.map((child, i) => (
+              <React.Fragment key={i}>{renderNode(child)}</React.Fragment>
+            ))}
+          </div>
+        </li>
+      );
 
     default:
       return null;

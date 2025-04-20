@@ -3,13 +3,14 @@ import { orbitron } from "@/app/fonts";
 import { usePerformanceMode } from "@/lib/contexts/performance-mode";
 import { useHash } from "@/lib/hooks/useHash";
 import { scrollToSection } from "@/lib/utils";
-import { Battery, BatteryCharging } from "lucide-react";
+import { Battery, BatteryCharging, LayoutDashboard } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { BlogCategories } from "./blog-categories";
 import { CyberpunkLogo } from "./cyber-logo/cyber-logo";
 import { LoginButton } from "./login-button";
+import { useSession } from "next-auth/react";
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -18,6 +19,12 @@ const Navbar = () => {
   const hash = useHash();
   const { reducedAnimations, togglePerformanceMode } = usePerformanceMode();
   const pathname = usePathname();
+
+  const { data: session } = useSession();
+
+  const isBlogEditor = ["ADMIN", "AUTHOR", "EDITOR"].includes(
+    session?.user.role ?? ""
+  );
 
   const isBlogPage = pathname?.startsWith("/blog");
 
@@ -101,7 +108,21 @@ const Navbar = () => {
               </>
             )}
 
-            {isBlogPage && <BlogCategories />}
+            {isBlogPage && (
+              <>
+                {isBlogEditor && (
+                  <Link
+                    href={"/blog/dashboard"}
+                    className="nav-link text-sm tracking-wider hover:text-cyan-400 transition-colors duration-300"
+                  >
+                    <span className="flex items-center">
+                      <LayoutDashboard className="mr-2" /> Dashboard
+                    </span>
+                  </Link>
+                )}
+                <BlogCategories />
+              </>
+            )}
 
             {isBlogPage && <LoginButton />}
           </div>

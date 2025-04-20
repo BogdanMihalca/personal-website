@@ -1,9 +1,10 @@
 "use server";
 
-import { getPosts, getPostsByCategory } from "@/lib/db-utils";
+import { getPosts, getPostsByCategory } from "@/lib/db-actions/post-actions";
 import { BlogPostList } from "@/components/custom/blog-post-list";
 import { Suspense } from "react";
 import { BlogPostSkeletonList } from "@/components/custom/blog-post-skeleton";
+import { unstable_cache } from "next/cache";
 
 interface PostFetcherProps {
   skip: number;
@@ -23,6 +24,26 @@ interface CategoryPostFetcherProps {
   currentPage: number;
 }
 
+const getCachedPosts = unstable_cache(
+  async (
+    skip: number,
+    categoryFilter: string[],
+    tagFilter: string[],
+    postsPerPage: number,
+    searchQuery: string
+  ) => {
+    return getPosts({
+      skip,
+      categoryFilter,
+      tagFilter,
+      POSTS_PER_PAGE: postsPerPage,
+      searchQuery,
+    });
+  },
+  ["blog-posts"],
+  { revalidate: 60 } // Cache for 1 minute
+);
+
 async function MainPostsFetcher({
   skip,
   categoryFilter = [],
@@ -31,13 +52,13 @@ async function MainPostsFetcher({
   searchQuery = "",
   currentPage,
 }: PostFetcherProps) {
-  const posts = await getPosts({
+  const posts = await getCachedPosts(
     skip,
     categoryFilter,
     tagFilter,
-    POSTS_PER_PAGE: postsPerPage,
-    searchQuery,
-  });
+    postsPerPage,
+    searchQuery
+  );
 
   return (
     <BlogPostList

@@ -14,7 +14,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { CyberpunkButton } from "./cyber-button";
-import { createComment, editComment } from "@/lib/db-utils";
+import { createComment, editComment } from "@/lib/db-actions/comment-actions";
 import { useRouter } from "next/navigation";
 
 const commentSchema = z.object({
@@ -81,7 +81,7 @@ export function CommentForm({
       if (onSuccess) {
         onSuccess();
       }
-    } catch (err: any) { //eslint-disable-line
+    } catch (err: any) {//eslint-disable-line
       setError(err.message || "Failed to submit comment");
     } finally {
       setIsSubmitting(false);

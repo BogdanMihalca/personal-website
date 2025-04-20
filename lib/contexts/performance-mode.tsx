@@ -20,7 +20,7 @@ const PerformanceContext = createContext<PerformanceContextType>({
 export const usePerformanceMode = () => useContext(PerformanceContext);
 
 export const PerformanceProvider = ({ children }: { children: ReactNode }) => {
-  const [reducedAnimations, setReducedAnimations] = useState(false);
+  const [reducedAnimations, setReducedAnimations] = useState(true);
 
   useEffect(() => {
     const savedPreference = localStorage.getItem("reducedAnimations");
@@ -34,7 +34,7 @@ export const PerformanceProvider = ({ children }: { children: ReactNode }) => {
       navigator
         .getBattery() //eslint-disable-next-line
         .then((battery: any) => {
-          if (battery.level < 0.2 && !battery.charging) {
+          if (battery.level < 0.5 && !battery.charging) {
             setReducedAnimations(true);
           }
         })

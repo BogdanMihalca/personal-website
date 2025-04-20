@@ -1,7 +1,7 @@
 import { Tag, User } from "@prisma/client";
 import { CyberBadge } from "./cyber-badge";
 import Link from "next/link";
-import { getMorePostsByAuthor } from "@/lib/db-utils";
+import { getMorePostsByAuthor } from "@/lib/db-actions/post-actions";
 import { formatRelativeTime } from "@/lib/utils";
 import Image from "next/image";
 import { Eye, Heart } from "lucide-react";

@@ -1,6 +1,7 @@
 import { GlitchText } from "@/components/custom/glitch-text";
 import { DecoDivider } from "@/components/custom/deco-divider";
-import { getFeaturedPosts, getFilters } from "@/lib/db-utils";
+import { getFeaturedPosts } from "@/lib/db-actions/post-actions";
+import { getFilters } from "@/lib/db-actions/filter-actions";
 import { BlogSidebar } from "@/components/custom/blog-filers-sidebar";
 import { SuspenseMainPostsList } from "@/components/custom/blog-post-fetcher";
 import { SideDisplay } from "@/components/custom/side-display";

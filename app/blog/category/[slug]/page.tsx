@@ -3,11 +3,9 @@ import { BlogSidebar } from "@/components/custom/blog-filers-sidebar";
 import { DecoDivider } from "@/components/custom/deco-divider";
 import { GlitchText } from "@/components/custom/glitch-text";
 import { SuspenseCategoryPostsList } from "@/components/custom/blog-post-fetcher";
-import {
-  getCategoryBySlug,
-  getFeaturedPosts,
-  getFilters,
-} from "@/lib/db-utils";
+import { getFeaturedPosts } from "@/lib/db-actions/post-actions";
+import { getCategoryBySlug } from "@/lib/db-actions/category-actions";
+import { getFilters } from "@/lib/db-actions/filter-actions";
 import { notFound } from "next/navigation";
 
 interface CategoryPageProps {
@@ -16,7 +14,6 @@ interface CategoryPageProps {
 }
 
 export async function generateMetadata({ params }: CategoryPageProps) {
-  // Get category details for metadata
   const { slug } = await params;
   const category = await getCategoryBySlug(slug);
 

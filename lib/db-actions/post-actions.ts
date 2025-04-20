@@ -1,89 +1,115 @@
 'use server'
 
 import { prisma } from "@/lib/prisma";
+import { PostStatus } from "@prisma/client";
 
-async function getFilters({
-    category
+
+async function getDashboardPosts({
+    authorId,
+    skip = 0,
+    take = 10,
+    status,
+    searchQuery = ""
 }: {
-    category?: string;
+    authorId?: string;
+    skip?: number;
+    take?: number;
+    status?: PostStatus;
+    searchQuery?: string;
 }) {
-    const categories = await prisma.category.findMany({
-        select: {
-            id: true,
-            name: true,
-            slug: true,
+    const where: Record<string, unknown> = {
+        ...(authorId ? { authorId } : {}),
+        ...(status ? { status } : {}),
+        ...(searchQuery
+            ? {
+                OR: [
+                    { title: { contains: searchQuery, mode: "insensitive" } },
+                    { slug: { contains: searchQuery, mode: "insensitive" } },
+                ],
+            }
+            : {}),
+    };
+
+    const posts = await prisma.post.findMany({
+        where,
+        skip,
+        take,
+        orderBy: {
+            updatedAt: "desc",
+        },
+        include: {
+            author: true,
+            category: true,
             _count: {
                 select: {
-                    posts: {
-                        where: {
-                            published: true,
-                        },
-                    },
-                },
-            },
-        },
-        where: {
-            posts: {
-                some: {
-                    published: true,
+                    views: true,
+                    likes: true,
+                    comments: true,
                 },
             },
         },
     });
 
-    const tags = await prisma.tag.findMany({
-        select: {
-            id: true,
-            name: true,
-            slug: true,
-            _count: {
-                select: {
-                    posts: {
-                        where: {
-                            post: {
-                                published: true,
-                                ...(category ? {
-                                    category: {
-                                        slug: category
-                                    }
-                                } : {})
-                            },
-                        },
-                    },
-                },
-            },
-        },
-        where: {
-            posts: {
-                some: {
-                    post: {
-                        published: true,
-                        ...(category ? {
-                            category: {
-                                slug: category
-                            }
-                        } : {})
-                    },
-                },
-            },
-        },
-    });
+    const totalPosts = await prisma.post.count({ where });
 
     return {
-        categories: categories.map((cat) => ({
-            id: cat.id,
-            name: cat.name,
-            slug: cat.slug,
-            postCount: cat._count.posts,
-        })),
-        tags: tags.map((tag) => ({
-            id: tag.id,
-            name: tag.name,
-            slug: tag.slug,
-            postCount: tag._count.posts,
-        })),
+        posts,
+        totalPosts,
     };
 }
+
+async function updatePostStatus(postId: number, status: PostStatus) {
+    try {
+        const post = await prisma.post.findUnique({
+            where: { id: postId },
+        });
+
+        if (!post) {
+            throw new Error("Post not found");
+        }
+
+        const updatedPost = await prisma.post.update({
+            where: { id: postId },
+            data: {
+                status,
+                published: status === "PUBLISHED",
+                publishedAt: status === "PUBLISHED" ? new Date() : post.publishedAt,
+            },
+        });
+
+        return updatedPost;
+    } catch (error) {
+        console.error("Error updating post status:", error);
+        throw error;
+    }
+}
+
+async function deletePost(postId: number) {
+    try {
+        const post = await prisma.post.findUnique({
+            where: { id: postId },
+        });
+
+        if (!post) {
+            throw new Error("Post not found");
+        }
+
+        await prisma.$transaction([
+            prisma.postSEO.deleteMany({ where: { postId } }),
+            prisma.postView.deleteMany({ where: { postId } }),
+            prisma.postLike.deleteMany({ where: { postId } }),
+            prisma.comment.deleteMany({ where: { postId } }),
+            prisma.tagsOnPosts.deleteMany({ where: { postId } }),
+            prisma.post.delete({ where: { id: postId } }),
+        ]);
+
+        return { success: true };
+    } catch (error) {
+        console.error("Error deleting post:", error);
+        throw error;
+    }
+}
+
 
 async function getFeaturedPosts() {
     const posts = await prisma.post.findMany({
@@ -379,22 +405,6 @@ async function getPostsByCategory({
 
 }
 
-
-async function getCategoryBySlug(slug: string) {
-    const category = await prisma.category.findUnique({
-        where: {
-            slug,
-        },
-    });
-    if (!category) return null;
-    return {
-        id: category.id,
-        name: category.name,
-        slug: category.slug,
-        description: category.description || "",
-    };
-}
-
 async function getPostBySlug(slug: string) {
     try {
         const post = await prisma.post.findUnique({
@@ -458,6 +468,7 @@ async function getPostBySlug(slug: string) {
         return null;
     }
 }
+
 
 async function createPostView(postId: number, { ip, userAgent }: { ip: string, userAgent: string }) {
     try {
@@ -538,198 +549,26 @@ async function togglePostLike(postId: number, userId: string) {
     }
 }
 
-async function toggleCommentLike(commentId: number, userId: string) {
+async function checkUserLikedPost(postId?: number, userId?: string) {
     try {
-        const comment = await prisma.comment.findUnique({
-            where: { id: commentId },
-        });
-
-        if (!comment) {
-            throw new Error("Comment not found");
+        if (!userId || !postId) {
+            return false;
         }
-
-        const existingLike = await prisma.commentLike.findUnique({
+        const like = await prisma.postLike.findUnique({
             where: {
-                commentId_userId: {
-                    commentId,
+                postId_userId: {
+                    postId,
                     userId,
                 }
             },
         });
 
-        if (existingLike) {
-            await prisma.commentLike.delete({
-                where: {
-                    commentId_userId: {
-                        commentId,
-                        userId,
-                    }
-                },
-            });
-
-            return { action: "unliked" };
-
-        } else {
-            await prisma.commentLike.create({
-                data: {
-                    commentId,
-                    userId,
-                },
-            });
-
-            return { action: "liked" };
-        }
+        return like !== null;
     } catch (error) {
-        console.error("Error toggling comment like:", error);
-        throw error;
+        console.error("Error checking if user liked post:", error);
+        return false;
     }
 }
-
-async function createComment(formData: FormData) {
-    const content = formData.get("content") as string;
-    const postId = Number(formData.get("postId"));
-    const parentIdValue = formData.get("parentId");
-    const userId = formData.get("userId") as string;
-
-    // Only parse parentId if it exists and is a valid number
-    const parentId = parentIdValue ? Number(parentIdValue) : null;
-
-    if (!content || !postId || !userId) {
-        throw new Error("Missing required fields");
-    }
-    if (content.length < 1 || content.length > 500) {
-        throw new Error("Comment content must be between 1 and 500 characters");
-    }
-    if (parentId && isNaN(parentId)) {
-        throw new Error("Invalid parent comment ID");
-    }
-    if (isNaN(postId)) {
-        throw new Error("Invalid post ID");
-    }
-    if (!userId) {
-        throw new Error("User ID is required");
-    }
-
-    try {
-        const post = await prisma.post.findUnique({
-            where: { id: postId },
-        });
-
-        if (!post) {
-            throw new Error("Post not found");
-        }
-
-        if (parentId) {
-            const parentComment = await prisma.comment.findUnique({
-                where: { id: parentId },
-            });
-
-            if (!parentComment) {
-                throw new Error("Parent comment not found");
-            }
-        }
-
-        const newComment = await prisma.comment.create({
-            data: {
-                content,
-                postId,
-                authorId: userId,
-                parentId: parentId, // This will be null if no parentId was provided
-                status: "APPROVED", // Auto-approve for now, in production you might want "PENDING"
-            },
-            include: {
-                author: true,
-                _count: {
-                    select: {
-                        likes: true,
-                    },
-                },
-            },
-        });
-
-        return newComment;
-    } catch (error) {
-        console.error("Error creating comment:", error);
-        throw error;
-    }
-}
-
-async function editComment(formData: FormData) {
-    const content = formData.get("content") as string;
-    const commentId = Number(formData.get("commentId"));
-    const userId = formData.get("userId") as string;
-    if (!content || !commentId || !userId) {
-        throw new Error("Missing required fields");
-    }
-    if (content.length < 1 || content.length > 500) {
-        throw new Error("Comment content must be between 1 and 500 characters");
-    }
-    if (isNaN(commentId)) {
-        throw new Error("Invalid comment ID");
-    }
-    if (!userId) {
-        throw new Error("User ID is required");
-    }
-    if (content.length < 1 || content.length > 500) {
-        throw new Error("Comment content must be between 1 and 500 characters");
-    }
-    try {
-        const comment = await prisma.comment.findUnique({
-            where: { id: commentId },
-        });
-        if (!comment) {
-            throw new Error("Comment not found");
-        }
-        if (comment.authorId !== userId) {
-            throw new Error("You are not authorized to edit this comment");
-        }
-        const updatedComment = await prisma.comment.update({
-            where: { id: commentId },
-            data: {
-                content,
-            },
-        });
-        return updatedComment;
-    } catch (error) {
-        console.error("Error editing comment:", error);
-        throw error;
-    }
-}
-
-async function deleteComment(commentId: number, userId: string) {
-    try {
-        const comment = await prisma.comment.findUnique({
-            where: { id: commentId },
-        });
-        if (!comment) {
-            throw new Error("Comment not found");
-        }
-        if (comment.authorId !== userId) {
-            throw new Error("You are not authorized to delete this comment");
-        }
-        // if comment has likes delete them
-        await prisma.commentLike.deleteMany({
-            where: {
-                commentId,
-            },
-        });
-        // if comment has replies delete them
-        await prisma.comment.deleteMany({
-            where: {
-                parentId: commentId,
-            },
-        });
-        // delete the comment
-        await prisma.comment.delete({
-            where: { id: commentId },
-        });
-        return { success: true };
-    } catch (error) {
-        console.error("Error deleting comment:", error);
-        throw error;
-    }
-}
-
 
 async function incrementShareCount(postId: number) {
     try {
@@ -757,42 +596,234 @@ async function incrementShareCount(postId: number) {
     }
 }
 
-async function checkUserLikedPost(postId?: number, userId?: string) {
+
+async function createPost({
+    title,
+    slug,
+    content,
+    shortDesc,
+    mainImage,
+    featured,
+    status,
+    authorId,
+    categoryId,
+    tags,
+    seo,
+}: {
+    title: string;
+    slug: string;
+    content: any; //eslint-disable-line @typescript-eslint/no-explicit-any
+    shortDesc?: string;
+    mainImage?: string;
+    featured?: boolean;
+    status?: PostStatus;
+    authorId: string;
+    categoryId?: number;
+    tags?: number[];
+    seo?: {
+        metaTitle?: string;
+        metaDesc?: string;
+        ogTitle?: string;
+        ogDesc?: string;
+        ogImage?: string;
+        keywords?: string;
+        canonicalUrl?: string;
+    };
+}) {
     try {
-        if (!userId || !postId) {
-            return false;
+        const existingPost = await prisma.post.findUnique({
+            where: { slug },
+        });
+
+        if (existingPost) {
+            throw new Error("Slug is already in use");
         }
-        const like = await prisma.postLike.findUnique({
-            where: {
-                postId_userId: {
-                    postId,
-                    userId,
-                }
+
+        let readingTime = 0;
+        if (content) {
+            const contentString = JSON.stringify(content);
+            const wordCount = contentString.split(/\s+/).length;
+            readingTime = Math.ceil(wordCount / 200);
+        }
+
+        const isPublished = status === PostStatus.PUBLISHED;
+
+        const post = await prisma.post.create({
+            data: {
+                title,
+                slug,
+                content,
+                shortDesc,
+                mainImage,
+                featured: featured || false,
+                status: status || PostStatus.DRAFT,
+                published: isPublished,
+                publishedAt: isPublished ? new Date() : null,
+                readingTime,
+                authorId,
+                categoryId,
             },
         });
 
-        return like !== null;
+        // Add tags if provided
+        if (tags && tags.length > 0) {
+            await Promise.all(
+                tags.map((tagId) =>
+                    prisma.tagsOnPosts.create({
+                        data: {
+                            postId: post.id,
+                            tagId,
+                        },
+                    })
+                )
+            );
+        }
+
+        if (seo) {
+            await prisma.postSEO.create({
+                data: {
+                    postId: post.id,
+                    metaTitle: seo.metaTitle,
+                    metaDesc: seo.metaDesc,
+                    ogTitle: seo.ogTitle,
+                    ogDesc: seo.ogDesc,
+                    ogImage: seo.ogImage,
+                    keywords: seo.keywords,
+                    canonicalUrl: seo.canonicalUrl,
+                },
+            });
+        }
+
+        return post;
     } catch (error) {
-        console.error("Error checking if user liked post:", error);
-        return false;
+        console.error("Error creating post:", error);
+        throw error;
     }
 }
 
+async function getPostById(postId: number) {
+    try {
+        const post = await prisma.post.findUnique({
+            where: {
+                id: postId
+            },
+            include: {
+                author: true,
+                category: true,
+                tags: {
+                    select: {
+                        tagId: true,
+                        tag: true
+                    }
+                },
+                seo: true
+            }
+        });
+
+        return post;
+    } catch (error) {
+        console.error("Error fetching post by ID:", error);
+        throw error;
+    }
+}
+
+async function updatePost({
+    id,
+    title,
+    slug,
+    content,
+    shortDesc,
+    mainImage,
+    featured,
+    status,
+    categoryId,
+    tags
+}: {
+    id: number;
+    title: string;
+    slug: string;
+    content: string;
+    shortDesc?: string;
+    mainImage?: string;
+    featured: boolean;
+    status: PostStatus;
+    authorId: string;
+    categoryId?: number;
+    tags?: number[];
+}) {
+    try {
+        // Check if slug is already in use by another post
+        const existingPost = await prisma.post.findFirst({
+            where: {
+                slug,
+                id: { not: id }
+            }
+        });
+
+        if (existingPost) {
+            throw new Error("Slug is already in use");
+        }
+
+        // Calculate reading time
+        let readingTime = 0;
+        if (content) {
+            const contentString = content;
+            const wordCount = contentString.split(/\s+/).length;
+            readingTime = Math.ceil(wordCount / 200);
+        }
+
+        // Get the current post to check publish status
+        const currentPost = await prisma.post.findUnique({
+            where: { id }
+        });
+
+        // Update the post
+        const updatedPost = await prisma.post.update({
+            where: { id },
+            data: {
+                title,
+                slug,
+                content: content ? JSON.parse(content) : undefined,
+                shortDesc,
+                mainImage,
+                featured,
+                status,
+                readingTime,
+                published: status === PostStatus.PUBLISHED,
+                publishedAt: status === PostStatus.PUBLISHED && !currentPost?.publishedAt ? new Date() : currentPost?.publishedAt,
+                categoryId,
+                tags: tags ? {
+                    deleteMany: {},
+                    create: tags.map(tagId => ({
+                        tag: {
+                            connect: { id: tagId }
+                        }
+                    }))
+                } : undefined
+            },
+        });
+
+        return updatedPost;
+    } catch (error) {
+        console.error("Error updating post:", error);
+        throw error;
+    }
+}
 
 export {
-    getMorePostsByAuthor,
-    getFilters,
+    getDashboardPosts,
+    updatePostStatus,
+    deletePost,
     getFeaturedPosts,
     getPosts,
+    getMorePostsByAuthor,
     getPostsByCategory,
-    getCategoryBySlug,
     getPostBySlug,
     createPostView,
     togglePostLike,
-    toggleCommentLike,
-    incrementShareCount,
     checkUserLikedPost,
-    deleteComment,
-    editComment,
-    createComment
-};
+    incrementShareCount,
+    createPost,
+    getPostById,
+    updatePost
+}
