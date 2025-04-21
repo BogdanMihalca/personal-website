@@ -138,9 +138,63 @@ async function deleteCategory(id: number) {
     }
 }
 
-async function getAllCategories() {
+async function getAllCategories({
+    skip = 0,
+    take = 10,
+    searchQuery = "",
+    returnAll = false,
+}: {
+    skip?: number;
+    take?: number;
+    searchQuery?: string;
+    returnAll?: boolean;
+} = {}) {
     try {
+        // Build the where clause based on filters
+        const where: Record<string, unknown> = {
+            ...(searchQuery
+                ? {
+                    OR: [
+                        { name: { contains: searchQuery, mode: "insensitive" } },
+                        { slug: { contains: searchQuery, mode: "insensitive" } },
+                        { description: { contains: searchQuery, mode: "insensitive" } },
+                    ],
+                }
+                : {}),
+        };
+
+        // Get total count for pagination
+        const totalCategories = await prisma.category.count({ where });
+
+        // If returnAll is true, fetch all categories without pagination
+        if (returnAll) {
+            const categories = await prisma.category.findMany({
+                where,
+                select: {
+                    id: true,
+                    name: true,
+                    slug: true,
+                    description: true,
+                    image: true,
+                    _count: {
+                        select: {
+                            posts: true,
+                        },
+                    },
+                },
+                orderBy: {
+                    name: 'asc',
+                },
+            });
+
+            return { categories, totalCategories };
+        }
+
+        // Get paginated categories
         const categories = await prisma.category.findMany({
+            where,
+            skip,
+            take,
             select: {
                 id: true,
                 name: true,
@@ -156,14 +210,15 @@ async function getAllCategories() {
             orderBy: {
                 name: 'asc',
             },
-        })
+        });
 
-        return categories
+        return { categories, totalCategories };
     } catch (error) {
-        console.error('Error fetching categories:', error)
-        throw error
+        console.error('Error fetching categories:', error);
+        throw error;
     }
 }
+
 
 async function getCategoryBySlug(slug: string) {
     const category = await prisma.category.findUnique({

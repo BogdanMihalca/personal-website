@@ -26,8 +26,8 @@ export default function TagSelector({
   useEffect(() => {
     const fetchTags = async () => {
       try {
-        const data = await getAllTags();
-        setTags(data);
+        const { tags } = await getAllTags({ returnAll: true });
+        setTags(tags);
       } catch (error) {
         console.error("Error fetching tags:", error);
       } finally {

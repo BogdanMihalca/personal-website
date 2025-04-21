@@ -129,9 +129,60 @@ export async function deleteTag(id: number) {
     }
 }
 
-export async function getAllTags() {
+export async function getAllTags({
+    skip = 0,
+    take = 10,
+    searchQuery = "",
+    returnAll = false,
+}: {
+    skip?: number;
+    take?: number;
+    searchQuery?: string;
+    returnAll?: boolean;
+} = {}) {
     try {
+        // Build the where clause based on filters
+        const where: Record<string, unknown> = {
+            ...(searchQuery
+                ? {
+                    OR: [
+                        { name: { contains: searchQuery, mode: "insensitive" } },
+                        { slug: { contains: searchQuery, mode: "insensitive" } },
+                    ],
+                }
+                : {}),
+        };
+
+        // Get total count for pagination
+        const totalTags = await prisma.tag.count({ where });
+
+        // If returnAll is true, return all tags without pagination
+        if (returnAll) {
+            const allTags = await prisma.tag.findMany({
+                where,
+                select: {
+                    id: true,
+                    name: true,
+                    slug: true,
+                    _count: {
+                        select: {
+                            posts: true,
+                        },
+                    },
+                },
+                orderBy: {
+                    name: 'asc',
+                },
+            })
+
+            return { tags: allTags, totalTags }
+        }
+
+        // Get paginated tags
         const tags = await prisma.tag.findMany({
+            where,
+            skip,
+            take,
             select: {
                 id: true,
                 name: true,
@@ -147,7 +198,7 @@ export async function getAllTags() {
             },
         })
 
-        return tags
+        return { tags, totalTags }
     } catch (error) {
         console.error('Error fetching tags:', error)
         throw error

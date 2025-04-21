@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
             );
         }
 
-        const tags = await getAllTags();
+        const { tags } = await getAllTags({ returnAll: true });
 
         return NextResponse.json({
             tags: tags.map(tag => ({

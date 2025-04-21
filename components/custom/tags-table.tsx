@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useActionState } from "react";
+import { useState, useEffect, useActionState, useCallback } from "react";
 import {
   Table,
   TableBody,
@@ -32,13 +32,13 @@ import { TagFormState } from "@/lib/types/form-types";
 import { CyberpunkButton } from "./cyber-button";
 import {
   useTableDialogs,
-  useTableSearch,
   RowActions,
   DeleteDialog,
   FormError,
   SubmitButton,
   TableItemWithPosts,
 } from "@/components/custom/table-utils";
+import { CyberPagination } from "./cyber-pagination";
 
 interface Tag extends TableItemWithPosts {
   name: string;
@@ -47,7 +47,13 @@ interface Tag extends TableItemWithPosts {
 
 export function TagsTable() {
   const [tags, setTags] = useState<Tag[]>([]);
+  const [totalTags, setTotalTags] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [page, setPage] = useState(1);
+
+  const TAGS_PER_PAGE = 10;
+  const totalPages = Math.ceil(totalTags / TAGS_PER_PAGE);
 
   const {
     editingItem: editingTag,
@@ -66,12 +72,6 @@ export function TagsTable() {
     itemHasPosts: tagHasPosts,
   } = useTableDialogs<Tag>();
 
-  const {
-    searchQuery,
-    setSearchQuery,
-    filteredItems: filteredTags,
-  } = useTableSearch(tags, ["name", "slug"]);
-
   const initialState: TagFormState = {
     errors: {},
     success: false,
@@ -89,9 +89,28 @@ export function TagsTable() {
     initialState
   );
 
+  // Load tags with pagination and search
+  const loadTags = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const data = await getAllTags({
+        skip: (page - 1) * TAGS_PER_PAGE,
+        take: TAGS_PER_PAGE,
+        searchQuery,
+      });
+      setTags(data.tags);
+      setTotalTags(data.totalTags);
+    } catch (error) {
+      console.error("Error loading tags:", error);
+      toast.error("Failed to load tags");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [page, searchQuery]);
+
   useEffect(() => {
     loadTags();
-  }, []);
+  }, [loadTags]);
 
   useEffect(() => {
     if (formState.success) {
@@ -102,7 +121,7 @@ export function TagsTable() {
     } else if (formState.message && !formState.success) {
       toast.error(formState.message);
     }
-  }, [formState, setIsDialogOpen, setEditingTag]);
+  }, [formState, setIsDialogOpen, setEditingTag, loadTags]);
 
   useEffect(() => {
     if (deleteResult) {
@@ -115,20 +134,7 @@ export function TagsTable() {
         toast.error(deleteResult.message);
       }
     }
-  }, [deleteResult, setIsDeleteDialogOpen, setTagToDelete]);
-
-  async function loadTags() {
-    setIsLoading(true);
-    try {
-      const data = await getAllTags();
-      setTags(data);
-    } catch (error) {
-      console.error("Error loading tags:", error);
-      toast.error("Failed to load tags");
-    } finally {
-      setIsLoading(false);
-    }
-  }
+  }, [deleteResult, setIsDeleteDialogOpen, setTagToDelete, loadTags]);
 
   async function handleDeleteTag() {
     if (!tagToDelete) return;
@@ -182,7 +188,7 @@ export function TagsTable() {
             <RefreshCw className="h-8 w-8 animate-spin text-neon-cyan" />
           </Card>
         </div>
-      ) : filteredTags.length > 0 ? (
+      ) : tags.length > 0 ? (
         <div className="border border-neon-cyan/30 rounded-md bg-space-black/50 backdrop-blur-sm shadow-[0_0_15px_rgba(0,255,255,0.2)]">
           <Table variant="cyberpunk">
             <TableHeader variant="cyberpunk">
@@ -196,7 +202,7 @@ export function TagsTable() {
               </TableRow>
             </TableHeader>
             <TableBody variant="cyberpunk">
-              {filteredTags.map((tag) => (
+              {tags.map((tag) => (
                 <TableRow variant="cyberpunk" key={tag.id}>
                   <TableCell variant="cyberpunk" highlight>
                     {tag.name}
@@ -220,6 +226,14 @@ export function TagsTable() {
         <Card className="w-full p-10 text-center bg-space-black/80 border-neon-cyan/30 text-neon-cyan backdrop-blur-md">
           No tags found. Create your first tag to get started.
         </Card>
+      )}
+
+      {totalPages > 1 && (
+        <CyberPagination
+          currentPage={page}
+          totalPages={totalPages}
+          onPageChange={setPage}
+        />
       )}
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

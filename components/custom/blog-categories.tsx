@@ -106,22 +106,24 @@ export function BlogCategories({
             All Posts
           </Link>
 
-          {categories.map((category) => (
-            <Link
-              key={category.id}
-              href={`/blog/category/${category.slug}`}
-              className={`py-1.5 text-sm flex justify-between items-center group transition-colors ${
-                currentCategory === category.slug
-                  ? "text-cyan-400"
-                  : "text-gray-300 hover:text-cyan-400"
-              }`}
-            >
-              <span>{category.name}</span>
-              <Badge className="bg-zinc-800/70 text-xs">
-                {category._count.posts}
-              </Badge>
-            </Link>
-          ))}
+          {categories
+            .filter((c) => c._count.posts > 0)
+            .map((category) => (
+              <Link
+                key={category.id}
+                href={`/blog/category/${category.slug}`}
+                className={`py-1.5 text-sm flex justify-between items-center group transition-colors ${
+                  currentCategory === category.slug
+                    ? "text-cyan-400"
+                    : "text-gray-300 hover:text-cyan-400"
+                }`}
+              >
+                <span>{category.name}</span>
+                <Badge className="bg-zinc-800/70 text-xs">
+                  {category._count.posts}
+                </Badge>
+              </Link>
+            ))}
         </div>
       </div>
     );
@@ -156,23 +158,25 @@ export function BlogCategories({
 
         <DropdownMenuSeparator className="bg-zinc-800/50 my-1" />
 
-        {categories.map((category) => (
-          <DropdownMenuItem key={category.id} asChild>
-            <Link
-              href={`/blog/category/${category.slug}`}
-              className={`px-4 py-2 text-sm flex justify-between items-center hover:bg-zinc-900/50 focus:bg-zinc-900/50 cursor-pointer ${
-                currentCategory === category.slug
-                  ? "text-cyan-400"
-                  : "text-gray-300 hover:text-cyan-400 focus:text-cyan-400"
-              }`}
-            >
-              <span>{category.name}</span>
-              <Badge className="ml-2 bg-zinc-800/70 text-xs">
-                {category._count.posts}
-              </Badge>
-            </Link>
-          </DropdownMenuItem>
-        ))}
+        {categories
+          .filter((c) => c._count.posts > 0)
+          .map((category) => (
+            <DropdownMenuItem key={category.id} asChild>
+              <Link
+                href={`/blog/category/${category.slug}`}
+                className={`px-4 py-2 text-sm flex justify-between items-center hover:bg-zinc-900/50 focus:bg-zinc-900/50 cursor-pointer ${
+                  currentCategory === category.slug
+                    ? "text-cyan-400"
+                    : "text-gray-300 hover:text-cyan-400 focus:text-cyan-400"
+                }`}
+              >
+                <span>{category.name}</span>
+                <Badge className="ml-2 bg-zinc-800/70 text-xs">
+                  {category._count.posts}
+                </Badge>
+              </Link>
+            </DropdownMenuItem>
+          ))}
       </DropdownMenuContent>
     </DropdownMenu>
   );

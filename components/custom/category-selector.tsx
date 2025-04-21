@@ -22,8 +22,8 @@ export default function CategorySelector({
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const data = await getAllCategories();
-        setCategories(data);
+        const { categories } = await getAllCategories({ returnAll: true });
+        setCategories(categories);
       } catch (error) {
         console.error("Error fetching categories:", error);
       } finally {

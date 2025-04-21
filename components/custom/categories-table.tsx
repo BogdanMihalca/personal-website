@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useActionState } from "react";
+import { useState, useEffect, useActionState, useCallback } from "react";
 import {
   Table,
   TableBody,
@@ -31,7 +31,6 @@ import {
 import { CyberpunkButton } from "./cyber-button";
 import {
   useTableDialogs,
-  useTableSearch,
   RowActions,
   DeleteDialog,
   FormError,
@@ -39,6 +38,7 @@ import {
   TableItemWithPosts,
 } from "@/components/custom/table-utils";
 import { CategoryFormState } from "@/lib/types/form-types";
+import { CyberPagination } from "./cyber-pagination";
 
 interface Category extends TableItemWithPosts {
   name: string;
@@ -49,7 +49,13 @@ interface Category extends TableItemWithPosts {
 
 export function CategoriesTable() {
   const [categories, setCategories] = useState<Category[]>([]);
+  const [totalCategories, setTotalCategories] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [page, setPage] = useState(1);
+
+  const CATEGORIES_PER_PAGE = 10;
+  const totalPages = Math.ceil(totalCategories / CATEGORIES_PER_PAGE);
 
   const {
     editingItem: editingCategory,
@@ -68,12 +74,6 @@ export function CategoriesTable() {
     itemHasPosts: categoryHasPosts,
   } = useTableDialogs<Category>();
 
-  const {
-    searchQuery,
-    setSearchQuery,
-    filteredItems: filteredCategories,
-  } = useTableSearch(categories, ["name", "slug", "description"]);
-
   const initialState: CategoryFormState = {
     errors: {},
     success: false,
@@ -91,9 +91,28 @@ export function CategoriesTable() {
     initialState
   );
 
+  // Load categories with pagination and search
+  const loadCategories = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const data = await getAllCategories({
+        skip: (page - 1) * CATEGORIES_PER_PAGE,
+        take: CATEGORIES_PER_PAGE,
+        searchQuery,
+      });
+      setCategories(data.categories);
+      setTotalCategories(data.totalCategories);
+    } catch (error) {
+      console.error("Error loading categories:", error);
+      toast.error("Failed to load categories");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [page, searchQuery]);
+
   useEffect(() => {
     loadCategories();
-  }, []);
+  }, [loadCategories]);
 
   useEffect(() => {
     if (formState.success) {
@@ -104,7 +123,7 @@ export function CategoriesTable() {
     } else if (formState.message && !formState.success) {
       toast.error(formState.message);
     }
-  }, [formState, setIsDialogOpen, setEditingCategory]);
+  }, [formState, setIsDialogOpen, setEditingCategory, loadCategories]);
 
   useEffect(() => {
     if (deleteResult) {
@@ -117,20 +136,12 @@ export function CategoriesTable() {
         toast.error(deleteResult.message);
       }
     }
-  }, [deleteResult, setIsDeleteDialogOpen, setCategoryToDelete]);
-
-  async function loadCategories() {
-    setIsLoading(true);
-    try {
-      const data = await getAllCategories();
-      setCategories(data);
-    } catch (error) {
-      console.error("Error loading categories:", error);
-      toast.error("Failed to load categories");
-    } finally {
-      setIsLoading(false);
-    }
-  }
+  }, [
+    deleteResult,
+    setIsDeleteDialogOpen,
+    setCategoryToDelete,
+    loadCategories,
+  ]);
 
   async function handleDeleteCategory() {
     if (!categoryToDelete) return;
@@ -184,7 +195,7 @@ export function CategoriesTable() {
             <RefreshCw className="h-8 w-8 animate-spin text-neon-cyan" />
           </Card>
         </div>
-      ) : filteredCategories.length > 0 ? (
+      ) : categories.length > 0 ? (
         <div className="border border-neon-cyan/30 rounded-md bg-space-black/50 backdrop-blur-sm shadow-[0_0_15px_rgba(0,255,255,0.2)]">
           <Table variant="cyberpunk">
             <TableHeader variant="cyberpunk">
@@ -198,7 +209,7 @@ export function CategoriesTable() {
               </TableRow>
             </TableHeader>
             <TableBody variant="cyberpunk">
-              {filteredCategories.map((category) => (
+              {categories.map((category) => (
                 <TableRow variant="cyberpunk" key={category.id}>
                   <TableCell variant="cyberpunk" highlight>
                     {category.name}
@@ -224,6 +235,14 @@ export function CategoriesTable() {
         <Card className="w-full p-10 text-center bg-space-black/80 border-neon-cyan/30 text-neon-cyan backdrop-blur-md">
           No categories found. Create your first category to get started.
         </Card>
+      )}
+
+      {totalPages > 1 && (
+        <CyberPagination
+          currentPage={page}
+          totalPages={totalPages}
+          onPageChange={setPage}
+        />
       )}
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
             );
         }
 
-        const categories = await getAllCategories();
+        const { categories } = await getAllCategories({ returnAll: true });
 
         return NextResponse.json({
             categories: categories.map(category => ({
