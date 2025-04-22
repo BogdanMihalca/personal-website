@@ -12,7 +12,11 @@ const nextConfig: NextConfig = {
       },
       {
         hostname: 'picsum.photos'
-      }
+      },
+      {
+        hostname: "res.cloudinary.com",
+      },
+
     ],
   },
 };
