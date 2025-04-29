@@ -30,6 +30,7 @@ import {
   Eye,
   Heart,
   MessageSquare,
+  Pencil,
 } from "lucide-react";
 import { Metadata } from "next";
 import { headers } from "next/headers";
@@ -93,10 +94,13 @@ export default async function PostDetail({ params }: PostDetailPageProps) {
 
   const currentUser = await auth();
   const isPostLiked = await checkUserLikedPost(post?.id, currentUser?.user?.id);
+  const hasEditPermission = ["AUTHOR", "EDITOR", "ADMIN"].includes(
+    currentUser?.user.role || ""
+  );
 
   return (
     <div className="min-h-screen bg-transparent pt-20">
-      <div className="container mx-auto px-4">
+      <div className="container relative mx-auto px-4">
         <div className="flex items-center space-x-3 mb-6 text-sm">
           <Breadcrumb>
             <BreadcrumbList className="text-zinc-400">
@@ -125,7 +129,7 @@ export default async function PostDetail({ params }: PostDetailPageProps) {
         </div>
 
         <div className="space-y-6 mb-8">
-          <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-white leading-tight">
+          <h1 className="text-2xl md:text-4xl lg:text-4xl font-bold text-white leading-tight">
             {post.title}
           </h1>
 
@@ -198,6 +202,21 @@ export default async function PostDetail({ params }: PostDetailPageProps) {
               </CyberBadge>
             ))}
           </div>
+          {hasEditPermission && (
+            <Link
+              href={`/blog/dashboard/edit/${post.id}`}
+              className="absolute top-20 right-4 text-sm text-zinc-400 hover:text-zinc-200"
+            >
+              <CyberpunkButton
+                icon={<Pencil />}
+                variant="secondary"
+                className="text-sm"
+                size="sm"
+              >
+                Edit Post
+              </CyberpunkButton>
+            </Link>
+          )}
 
           <DecoDivider />
         </div>

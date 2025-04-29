@@ -150,7 +150,7 @@ const BlogSidebar = ({
               onClick={clearFilters}
               variant="ghost"
               size="sm"
-              className="h-6 text-xs text-neon-cyan/50 hover:text-neon-cyan"
+              className="h-6 text-xs text-neon-cyan/50 hover:text-neon-cyan hover:bg-black/50"
             >
               Clear All
             </Button>
@@ -205,7 +205,7 @@ const BlogSidebar = ({
               <button
                 key={`cat-${category.slug}`}
                 onClick={() => toggleCategory(category.slug)}
-                className={`flex items-center justify-between w-full px-2 py-1 text-sm rounded-sm transition-colors ${
+                className={`flex items-center justify-between w-full px-2 py-1 text-sm rounded-sm transition-colors cursor-pointer ${
                   selectedCategories.includes(category.slug)
                     ? "bg-neon-cyan/20 text-neon-cyan"
                     : "text-gray-300 hover:bg-black/50"

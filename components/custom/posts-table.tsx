@@ -352,7 +352,14 @@ export function PostsTable({ userId, isAdmin }: PostsTableProps) {
             <TableBody variant="cyberpunk">
               {posts.map((post) => (
                 <TableRow variant="cyberpunk" key={post.id}>
-                  <TableCell variant="cyberpunk" highlight>
+                  <TableCell
+                    variant="cyberpunk"
+                    highlight
+                    className="max-w-[450px] overflow-hidden text-ellipsis cursor-pointer"
+                    onClick={() => router.push(`/blog/${post.slug}`)}
+                    title={post.title}
+                    role="button"
+                  >
                     {post.title}
                   </TableCell>
                   <TableCell variant="cyberpunk">

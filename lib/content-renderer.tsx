@@ -20,6 +20,8 @@ export function ContentRenderer({
 
   try {
     const parsedContent = JSON.parse(content);
+    console.log("Parsed content:", parsedContent);
+
     return renderNode(parsedContent);
   } catch (error) {
     console.error("Failed to parse content:", error);
@@ -89,6 +91,32 @@ function renderNode(node: ContentNode): React.ReactNode {
             <React.Fragment key={i}>{renderNode(child)}</React.Fragment>
           ))}
         </ol>
+      );
+
+    case "bullet_list":
+      return (
+        <ul className="list-disc pl-6 space-y-2 my-4 text-zinc-300">
+          {node.content?.map((child, i) => (
+            <React.Fragment key={i}>{renderNode(child)}</React.Fragment>
+          ))}
+        </ul>
+      );
+    case "ordered_list":
+      return (
+        <ol className="list-decimal pl-6 space-y-2 my-4 text-zinc-300">
+          {node.content?.map((child, i) => (
+            <React.Fragment key={i}>{renderNode(child)}</React.Fragment>
+          ))}
+        </ol>
+      );
+
+    case "list_item":
+      return (
+        <li>
+          {node.content?.map((child, i) => (
+            <React.Fragment key={i}>{renderNode(child)}</React.Fragment>
+          ))}
+        </li>
       );
 
     case "listItem":

@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 @plugin 'tailwindcss-animate';
+@plugin 'tailwind-scrollbar';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -91,6 +92,8 @@ html {
       var(--color-neon-cyan) 0 1px,
       transparent 1px 40px
     );
+
+  --removed-body-scroll-bar-size: 0px;
 }
 
 @layer base {

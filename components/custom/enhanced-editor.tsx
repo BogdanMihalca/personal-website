@@ -91,7 +91,11 @@ const EnhancedEditor = ({
       Typography,
       Underline,
     ],
-    content: JSON.parse(content),
+    content: JSON.parse(
+      content
+        .replaceAll("list_item", "listItem")
+        .replaceAll("bullet_list", "bulletList")
+    ),
     onUpdate: ({ editor }) => {
       onChange?.(JSON.stringify(editor.getJSON()));
     },

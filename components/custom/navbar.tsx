@@ -6,7 +6,7 @@ import { scrollToSection } from "@/lib/utils";
 import { Battery, BatteryCharging, LayoutDashboard } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { BlogCategories } from "./blog-categories";
 import { CyberpunkLogo } from "./cyber-logo/cyber-logo";
 import { LoginButton } from "./login-button";
@@ -19,6 +19,7 @@ const Navbar = () => {
   const hash = useHash();
   const { reducedAnimations, togglePerformanceMode } = usePerformanceMode();
   const pathname = usePathname();
+  const menuRef = useRef<HTMLDivElement>(null);
 
   const { data: session } = useSession();
 
@@ -60,6 +61,19 @@ const Navbar = () => {
       setActiveSection("home");
     }
   }, [hash, isBlogPage, pathname]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <nav
@@ -177,7 +191,10 @@ const Navbar = () => {
       </div>
 
       {menuOpen && (
-        <div className="md:hidden bg-black bg-opacity-70 backdrop-blur-md border-t border-cyan-500/30 shadow-lg shadow-cyan-500/20">
+        <div
+          ref={menuRef}
+          className="md:hidden bg-black bg-opacity-70 backdrop-blur-md border-t border-cyan-500/30 shadow-lg shadow-cyan-500/20"
+        >
           <div className="container mx-auto px-4 py-4">
             <div className="flex flex-col space-y-4">
               {isBlogPage && <LoginButton />}
@@ -209,7 +226,7 @@ const Navbar = () => {
 
               {isBlogPage && (
                 <div className="pl-3 py-2 border-l-2 border-cyan-400/30">
-                  <BlogCategories mobile={true} />
+                  <BlogCategories mobile={true} setMenuOpen={setMenuOpen} />
                 </div>
               )}
             </div>

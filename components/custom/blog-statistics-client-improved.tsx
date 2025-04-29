@@ -26,6 +26,9 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { GlitchText } from "@/components/custom/glitch-text";
 import { UserRole } from "@prisma/client";
+import { cn } from "@/lib/utils";
+import { ArrowDownCircle, ArrowUpCircle, MinusCircle } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface StatCardProps {
   title: string;
@@ -37,7 +40,7 @@ interface StatCardProps {
   animate?: boolean;
 }
 
-function StatCard({
+export function StatCard({
   title,
   value,
   description,
@@ -46,60 +49,89 @@ function StatCard({
   growth,
   animate = false,
 }: StatCardProps) {
+  // Convert value to string with formatting
+  const formattedValue =
+    typeof value === "number" ? value.toLocaleString() : value;
+
+  // Determine growth icon and color
+  const getGrowthDetails = () => {
+    if (growth === undefined) return { icon: null, color: "" };
+    if (growth > 0)
+      return {
+        icon: <ArrowUpCircle size={16} className="mr-1" />,
+        color: "text-emerald-400",
+      };
+    if (growth < 0)
+      return {
+        icon: <ArrowDownCircle size={16} className="mr-1" />,
+        color: "text-rose-400",
+      };
+    return {
+      icon: <MinusCircle size={16} className="mr-1" />,
+      color: "text-gray-400",
+    };
+  };
+
+  const { icon: growthIcon, color: growthColor } = getGrowthDetails();
+
+  const CardWrapper = animate ? motion.div : "div";
+  const motionProps = animate
+    ? {
+        whileHover: { scale: 1.02 },
+        transition: { type: "spring", stiffness: 300, damping: 20 },
+      }
+    : {};
+
   return (
-    <Card
-      className={`bg-space-black/90 backdrop-blur-md border border-neon-cyan/50 shadow-[0_0_15px_rgba(0,255,255,0.2)] ${className} ${
-        animate ? "hover:scale-[1.02] transition-all" : ""
-      }`}
-    >
-      <CardHeader className="pb-2">
-        <CardTitle className="text-neon-cyan font-mono text-sm flex items-center justify-between">
-          {title}
-          {icon}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="flex items-end gap-2">
-          <div
-            className={`text-2xl font-bold text-white tracking-tight ${
-              animate ? "animate-pulse" : ""
-            }`}
-          >
-            {value.toLocaleString()}
+    <CardWrapper {...motionProps}>
+      <Card
+        className={cn(
+          "bg-black/90 backdrop-blur-md border border-cyan-400/50",
+          "shadow-lg shadow-cyan-400/20 overflow-hidden relative",
+          "after:absolute after:inset-x-0 after:bottom-0 after:h-[2px] after:bg-gradient-to-r",
+          "after:from-cyan-500/30 after:via-cyan-400 after:to-cyan-500/30",
+          "h-full", // Added to ensure full height
+          className
+        )}
+      >
+        <CardHeader className="pb-2 border-b border-cyan-900/40">
+          <CardTitle className="text-cyan-400 font-mono text-sm flex items-center justify-between">
+            <span className="uppercase tracking-wider">{title}</span>
+            {icon && <span className="text-cyan-300">{icon}</span>}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="pt-4">
+          <div className="flex items-end gap-2">
+            <div
+              className={cn(
+                "text-3xl font-bold text-white tracking-tight font-mono",
+                animate && "animate-glow"
+              )}
+            >
+              {formattedValue}
+            </div>
+
+            {growth !== undefined && (
+              <div
+                className={cn(
+                  "text-xs font-mono flex items-center",
+                  growthColor
+                )}
+              >
+                {growthIcon}
+                {Math.abs(growth)}%
+              </div>
+            )}
           </div>
 
-          {growth !== undefined && (
-            <div
-              className={`text-xs font-mono flex items-center ${
-                growth > 0
-                  ? "text-green-400"
-                  : growth < 0
-                  ? "text-red-400"
-                  : "text-gray-400"
-              }`}
-            >
-              {growth > 0 ? (
-                <>
-                  <span className="mr-1">↑</span>
-                  {growth}%
-                </>
-              ) : growth < 0 ? (
-                <>
-                  <span className="mr-1">↓</span>
-                  {Math.abs(growth)}%
-                </>
-              ) : (
-                "0%"
-              )}
-            </div>
+          {description && (
+            <p className="text-sm text-gray-300/80 mt-2 font-light">
+              {description}
+            </p>
           )}
-        </div>
-
-        {description && (
-          <p className="text-sm text-gray-400 mt-1">{description}</p>
-        )}
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </CardWrapper>
   );
 }
 
@@ -274,7 +306,7 @@ export function BlogStatisticsClient({
           Blog Statistics Overview
         </GlitchText>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8 grid-auto-rows-fr">
           <StatCard
             title="Total Views"
             value={summaryStats?.totalViews || 0}
@@ -814,7 +846,7 @@ export function BlogStatisticsClient({
                 </CardDescription>
               </CardHeader>
               <CardContent className="pt-6">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-4 grid-auto-rows-fr">
                   <StatCard
                     title="Your Posts"
                     value={authorStats?.authorPosts || 0}

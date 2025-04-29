@@ -1,5 +1,3 @@
-"use client";
-
 import { ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -16,6 +14,7 @@ import { useEffect, useState } from "react";
 interface BlogCategoriesProps {
   className?: string;
   mobile?: boolean;
+  setMenuOpen?: (open: boolean) => void;
 }
 
 interface Category {
@@ -30,6 +29,7 @@ interface Category {
 export function BlogCategories({
   className = "",
   mobile = false,
+  setMenuOpen = () => {},
 }: BlogCategoriesProps) {
   const [categories, setCategories] = useState<Category[]>([]);
   const pathname = usePathname();
@@ -39,19 +39,6 @@ export function BlogCategories({
 
   useEffect(() => {
     async function fetchCategories() {
-      try {
-        const response = await fetch("/api/categories");
-        if (response.ok) {
-          const data = await response.json();
-          if (data.categories) {
-            setCategories(data.categories);
-            return;
-          }
-        }
-      } catch {
-        console.error("Failed to fetch categories from API");
-      }
-
       try {
         const response = await fetch("/api/blogposts/categories");
         if (response.ok) {
@@ -117,6 +104,7 @@ export function BlogCategories({
                     ? "text-cyan-400"
                     : "text-gray-300 hover:text-cyan-400"
                 }`}
+                onClick={() => setMenuOpen(false)}
               >
                 <span>{category.name}</span>
                 <Badge className="bg-zinc-800/70 text-xs">

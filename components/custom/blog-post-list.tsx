@@ -20,7 +20,8 @@ export function BlogPostList({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const searchQuery = searchParams.get("q") || "";
+  const searchQuery =
+    searchParams.get("categories") || searchParams.get("tags");
 
   const handlePageChange = (page: number) => {
     const params = new URLSearchParams(searchParams.toString());

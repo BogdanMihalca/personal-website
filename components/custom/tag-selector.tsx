@@ -1,9 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { useEffect, useState } from "react";
-import { CyberBadge } from "./cyber-badge";
 import { motion } from "framer-motion";
 import { getAllTags } from "@/lib/db-actions/tag-actions";
+import { MultiSelect } from "./multiselect";
+import { Tag } from "lucide-react";
 
 interface Tag {
   id: number;
@@ -38,14 +37,6 @@ export default function TagSelector({
     fetchTags();
   }, []);
 
-  const handleToggleTag = (tagId: number) => {
-    if (selectedTags.includes(tagId)) {
-      onChange(selectedTags.filter((id) => id !== tagId));
-    } else {
-      onChange([...selectedTags, tagId]);
-    }
-  };
-
   if (isLoading) {
     return (
       <div className="bg-black/50 border border-neon-purple/30 rounded-sm p-4 min-h-[100px] flex flex-wrap gap-2">
@@ -57,60 +48,37 @@ export default function TagSelector({
   }
 
   return (
-    <div className="bg-black/50 border border-neon-purple/30 rounded-sm p-4 min-h-[100px]">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="bg-black/50 border border-neon-purple/30 rounded-sm p-4 min-h-[100px]"
+    >
       <div className="flex flex-wrap gap-2">
-        {tags.map((tag, index) => {
-          const isSelected = selectedTags.includes(tag.id);
-
-          const getVariant = () => {
-            if (isSelected) return "neon";
-            if (index % 3 === 0) return "holo";
-            if (index % 3 === 1) return "glitch";
-            return "circuit";
-          };
-
-          return (
-            <motion.div
-              key={tag.id}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => handleToggleTag(tag.id)}
-            >
-              <CyberBadge
-                variant={getVariant() as any}
-                delay={index * 0.1}
-                className="cursor-pointer select-none"
-              >
-                {tag.name}
-              </CyberBadge>
-            </motion.div>
-          );
-        })}
+        <MultiSelect
+          options={tags.map((tag) => ({
+            value: `${tag.id}`,
+            label: tag.name,
+            icon: Tag,
+          }))}
+          selectedValues={selectedTags}
+          onChange={onChange}
+          placeholder="Select tags..."
+          variant="cyberpurple"
+          className="w-full"
+          animation={0.5}
+          maxCount={5}
+          classNames={{
+            input:
+              "bg-black/70 border border-neon-purple/30 rounded-sm p-2 hover:border-neon-purple/50",
+            dropdown: "bg-black/90 border border-neon-purple/30 rounded-sm",
+            option: "p-2 hover:bg-neon-purple/10 cursor-pointer",
+          }}
+        />
       </div>
 
       {tags.length === 0 && (
         <p className="text-neon-purple/50 text-sm">No tags available</p>
       )}
-
-      {selectedTags.length > 0 && (
-        <div className="mt-4 pt-4 border-t border-neon-purple/20">
-          <p className="text-xs text-neon-purple mb-2">Selected Tags:</p>
-          <div className="flex flex-wrap gap-2">
-            {tags
-              .filter((tag) => selectedTags.includes(tag.id))
-              .map((tag, index) => (
-                <CyberBadge
-                  key={`selected-${tag.id}`}
-                  variant="neon"
-                  delay={index * 0.1}
-                  className="text-xs"
-                >
-                  {tag.name}
-                </CyberBadge>
-              ))}
-          </div>
-        </div>
-      )}
-    </div>
+    </motion.div>
   );
 }

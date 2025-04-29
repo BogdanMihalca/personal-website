@@ -139,6 +139,57 @@ const Footer = () => {
           </div>
 
           <div className="space-y-4">
+            <h3 className="text-neon-pink font-mono text-sm mb-4">LEGAL://</h3>
+            <ul className="space-y-2 text-sm">
+              <li>
+                <Link
+                  href="/legal/tos"
+                  className="text-gray-400 hover:text-neon-cyan transition-colors duration-300 flex items-center"
+                >
+                  <motion.span
+                    className="text-neon-cyan mr-2 opacity-80"
+                    animate={{ opacity: [0.4, 0.8, 0.4] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  >
+                    &gt;
+                  </motion.span>
+                  TERMS OF SERVICE
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/legal/privacy"
+                  className="text-gray-400 hover:text-neon-cyan transition-colors duration-300 flex items-center"
+                >
+                  <motion.span
+                    className="text-neon-cyan mr-2 opacity-80"
+                    animate={{ opacity: [0.4, 0.8, 0.4] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  >
+                    &gt;
+                  </motion.span>
+                  PRIVACY POLICY
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/legal/data-deletion"
+                  className="text-gray-400 hover:text-neon-cyan transition-colors duration-300 flex items-center"
+                >
+                  <motion.span
+                    className="text-neon-cyan mr-2 opacity-80"
+                    animate={{ opacity: [0.4, 0.8, 0.4] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  >
+                    &gt;
+                  </motion.span>
+                  DATA DELETION
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          <div className="space-y-4">
             <h3 className="text-neon-pink font-mono text-sm mb-4">
               TECH_STACK://
             </h3>

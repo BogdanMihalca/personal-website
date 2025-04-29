@@ -25,14 +25,8 @@ export function DashboardContent({ userRole, userId }: DashboardContentProps) {
 
   return (
     <div className="space-y-6">
-      <Tabs defaultValue="statistics" className="w-full">
+      <Tabs defaultValue="posts" className="w-full">
         <TabsList className="grid grid-cols-5 mb-2 bg-space-black/80 border border-neon-cyan/30 p-1">
-          <TabsTrigger
-            value="statistics"
-            className="cursor-pointer data-[state=active]:bg-neon-cyan/20 data-[state=active]:text-neon-cyan data-[state=active]:border-neon-cyan/50 data-[state=active]:shadow-[0_0_10px_rgba(0,255,255,0.3)] border border-transparent transition-all text-gray-400 hover:text-gray-200"
-          >
-            Statistics
-          </TabsTrigger>{" "}
           <TabsTrigger
             value="posts"
             className="cursor-pointer data-[state=active]:bg-neon-cyan/20 data-[state=active]:text-neon-cyan data-[state=active]:border-neon-cyan/50 data-[state=active]:shadow-[0_0_10px_rgba(0,255,255,0.3)] border border-transparent transition-all text-gray-400 hover:text-gray-200"
@@ -59,6 +53,12 @@ export function DashboardContent({ userRole, userId }: DashboardContentProps) {
           >
             Tags
           </TabsTrigger>
+          <TabsTrigger
+            value="statistics"
+            className="cursor-pointer data-[state=active]:bg-neon-cyan/20 data-[state=active]:text-neon-cyan data-[state=active]:border-neon-cyan/50 data-[state=active]:shadow-[0_0_10px_rgba(0,255,255,0.3)] border border-transparent transition-all text-gray-400 hover:text-gray-200"
+          >
+            Statistics
+          </TabsTrigger>{" "}
         </TabsList>
 
         <TabsContent value="posts" className="space-y-4">
