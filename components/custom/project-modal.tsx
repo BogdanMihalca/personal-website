@@ -70,111 +70,118 @@ const ProjectModal = ({
         className="sm:max-w-[95vw] md:max-w-[85vw] lg:max-w-4xl xl:max-w-5xl w-full max-h-[90vh] border-none bg-transparent p-0 overflow-hidden "
         title="project-modal"
       >
-        <CyberpunkDisplay
-          title={project.title}
-          className="max-w-[90vw] md:max-w-[60vw] mx-auto"
+        <button
+          className="absolute text-3xl top-2 right-2 text-red-100 z-100 cursor-pointer hover:text-red-400 transition-colors duration-300"
+          onClick={onClose}
         >
-          <div className="text-cyan-100 overflow-y-auto max-h-[calc(80vh-100px)] w-full">
-            <div className="relative h-64 lg:h-80 mb-6 group">
-              <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-fuchsia-500/10 z-0" />
-              <div className="relative h-full overflow-hidden">
-                <div
-                  className="relative h-full cursor-pointer"
-                  onClick={() => setImageViewerOpen(true)}
-                >
-                  <Image
-                    src={project.images[activeImageIndex]}
-                    alt={`${project.title} screenshot ${activeImageIndex + 1}`}
-                    fill
-                    className="object-cover object-center"
-                  />
-                  <div className="absolute inset-0 bg-black/20 opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-10">
-                    <div className="bg-black/60 text-cyan-400 px-3 py-1 rounded-sm text-xs border border-cyan-500/30 shadow-[0_0_10px_rgba(6,182,212,0.3)]">
-                      View Full Size
+          X
+        </button>
+        <CyberpunkDisplay title={project.title} className="mx-auto">
+          <>
+            <div className="text-cyan-100 overflow-y-auto max-h-[calc(80vh-100px)] w-full">
+              <div className="relative h-64 lg:h-80 mb-6 group">
+                <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-fuchsia-500/10 z-0" />
+                <div className="relative h-full overflow-hidden">
+                  <div
+                    className="relative h-full cursor-pointer"
+                    onClick={() => setImageViewerOpen(true)}
+                  >
+                    <Image
+                      src={project.images[activeImageIndex]}
+                      alt={`${project.title} screenshot ${
+                        activeImageIndex + 1
+                      }`}
+                      fill
+                      className="object-cover object-center"
+                    />
+                    <div className="absolute inset-0 bg-black/20 opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-10">
+                      <div className="bg-black/60 text-cyan-400 px-3 py-1 rounded-sm text-xs border border-cyan-500/30 shadow-[0_0_10px_rgba(6,182,212,0.3)]">
+                        View Full Size
+                      </div>
                     </div>
                   </div>
-                </div>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    prevImage();
-                  }}
-                  className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 text-cyan-400 p-2 rounded-full opacity-70 hover:opacity-100 transition-all z-20 cursor-pointer"
-                >
-                  <ChevronLeft size={20} />
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    nextImage();
-                  }}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 text-cyan-400 p-2 rounded-full opacity-70 hover:opacity-100 transition-all z-20 cursor-pointer"
-                >
-                  <ChevronRight size={20} />
-                </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      prevImage();
+                    }}
+                    className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 text-cyan-400 p-2 rounded-full opacity-70 hover:opacity-100 transition-all z-20 cursor-pointer"
+                  >
+                    <ChevronLeft size={20} />
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      nextImage();
+                    }}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 text-cyan-400 p-2 rounded-full opacity-70 hover:opacity-100 transition-all z-20 cursor-pointer"
+                  >
+                    <ChevronRight size={20} />
+                  </button>
 
-                <div className="absolute bottom-2 right-2 bg-black/70 text-cyan-400 px-2 py-1 text-xs rounded-sm">
-                  {activeImageIndex + 1} / {project.images.length}
+                  <div className="absolute bottom-2 right-2 bg-black/70 text-cyan-400 px-2 py-1 text-xs rounded-sm">
+                    {activeImageIndex + 1} / {project.images.length}
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="space-y-4 p-4">
-              <div className="flex flex-wrap gap-2 mb-4">
-                {project.techStack.map((tech, index) => {
-                  const variants = {
-                    cyan: "default",
-                    fuchsia: "neon",
-                    blue: "holo",
-                    purple: "glitch",
-                    amber: "circuit",
-                    rose: "neon",
-                    red: "neon",
-                    green: "circuit",
-                  };
+              <div className="space-y-4 p-4">
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {project.techStack.map((tech, index) => {
+                    const variants = {
+                      cyan: "default",
+                      fuchsia: "neon",
+                      blue: "holo",
+                      purple: "glitch",
+                      amber: "circuit",
+                      rose: "neon",
+                      red: "neon",
+                      green: "circuit",
+                    };
 
-                  return (
-                    <CyberBadge
-                      key={tech.name}
-                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                      variant={variants[tech.color] as any}
-                      delay={index * 0.2}
+                    return (
+                      <CyberBadge
+                        key={tech.name}
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        variant={variants[tech.color] as any}
+                        delay={index * 0.2}
+                      >
+                        {tech.name}
+                      </CyberBadge>
+                    );
+                  })}
+                </div>
+
+                <p className="text-sm text-gray-300 leading-relaxed">
+                  {project.fullDescription}
+                </p>
+
+                <div className="pt-4 flex gap-4">
+                  {project.url && (
+                    <CyberpunkButton
+                      size="md"
+                      variant="primary"
+                      icon={<ExternalLink size={16} className="mr-2" />}
+                      onClick={() => window.open(project.url, "_blank")}
                     >
-                      {tech.name}
-                    </CyberBadge>
-                  );
-                })}
-              </div>
+                      VISIT PROJECT
+                    </CyberpunkButton>
+                  )}
 
-              <p className="text-sm text-gray-300 leading-relaxed">
-                {project.fullDescription}
-              </p>
-
-              <div className="pt-4 flex gap-4">
-                {project.url && (
-                  <CyberpunkButton
-                    size="md"
-                    variant="primary"
-                    icon={<ExternalLink size={16} className="mr-2" />}
-                    onClick={() => window.open(project.url, "_blank")}
-                  >
-                    VISIT PROJECT
-                  </CyberpunkButton>
-                )}
-
-                {project.githubUrl && (
-                  <CyberpunkButton
-                    size="md"
-                    variant="secondary"
-                    icon={<ArrowRight size={16} className="mr-2" />}
-                    onClick={() => window.open(project.githubUrl, "_blank")}
-                  >
-                    VIEW CODE
-                  </CyberpunkButton>
-                )}
+                  {project.githubUrl && (
+                    <CyberpunkButton
+                      size="md"
+                      variant="secondary"
+                      icon={<ArrowRight size={16} className="mr-2" />}
+                      onClick={() => window.open(project.githubUrl, "_blank")}
+                    >
+                      VIEW CODE
+                    </CyberpunkButton>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
+          </>
         </CyberpunkDisplay>
       </DialogContent>
 

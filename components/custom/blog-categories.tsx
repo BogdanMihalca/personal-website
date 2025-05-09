@@ -78,8 +78,8 @@ export function BlogCategories({
   if (mobile) {
     return (
       <div className={`${className}`}>
-        <div className="flex items-center cursor-pointer mb-2">
-          <span className="text-sm uppercase tracking-wider text-cyan-400 font-medium">
+        <div className="flex items-center mb-2 cursor-pointer ">
+          <span className="text-sm uppercase tracking-wider text-cyan-400 font-medium cursor-pointer">
             Categories
           </span>
           <ChevronDown size={16} className="ml-1 text-cyan-400" />
@@ -120,7 +120,7 @@ export function BlogCategories({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        className={`flex items-center focus:outline-none ${className}`}
+        className={`flex items-center focus:outline-none ${className} cursor-pointer`}
       >
         <span className="text-sm tracking-wider hover:text-cyan-400 transition-colors duration-300">
           CATEGORIES

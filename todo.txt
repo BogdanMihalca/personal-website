@@ -1,5 +1,0 @@
-
-- view project mobile - close button missing
-- blog listing categories - pagination margin
-- mobile menu, after clicking to close menu 
-- cyberbutton mobile text to wrap

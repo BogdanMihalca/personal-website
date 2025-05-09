@@ -89,7 +89,7 @@ const CyberpunkDisplay: FC<{
   };
 
   return (
-    <div className={`relative ${className}`}>
+    <div className={`relative ${className} w-full h-full overflow-hidden`}>
       <div
         className="absolute inset-0 z-0"
         style={{

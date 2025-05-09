@@ -15,6 +15,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { FeaturedPostCard } from "./blog-post-card";
 import { CyberBadge } from "./cyber-badge";
+import { ScrollArea } from "../ui/scroll-area";
 
 interface FilterCategory {
   id: number;
@@ -119,173 +120,178 @@ const BlogSidebar = ({
   };
 
   return (
-    <div className="h-full py-4 px-6 flex flex-col space-y-6 bg-space-black/80 text-gray-200 backdrop-blur-sm">
-      <form onSubmit={handleSearchSubmit} className="space-y-2">
-        <div className="relative">
-          <Input
-            id="search"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search posts..."
-            className="bg-black/50 text-gray-300 border-neon-cyan/30 focus:border-neon-cyan/50 pr-10"
-          />
-          <Button
-            type="submit"
-            size="icon"
-            variant="ghost"
-            className="absolute right-0 top-0 h-full text-neon-cyan/50 hover:text-neon-cyan"
-          >
-            <Search className="h-4 w-4" />
-          </Button>
-        </div>
-      </form>
-
-      {(selectedCategories.length > 0 || selectedTags.length > 0) && (
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <Label className="text-xs uppercase tracking-wider text-gray-400">
-              Active Filters
-            </Label>
+    <div className="h-full py-4 px-2 md:px-6 flex flex-col space-y-6 bg-space-black/80 text-gray-200 backdrop-blur-sm">
+      <ScrollArea className="h-[450px] px-4 lg:h-full block">
+        <form onSubmit={handleSearchSubmit} className="space-y-2">
+          <div className="relative">
+            <Input
+              id="search"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search posts..."
+              className="bg-black/50 text-gray-300 border-neon-cyan/30 focus:border-neon-cyan/50 pr-10"
+            />
             <Button
-              onClick={clearFilters}
+              type="submit"
+              size="icon"
               variant="ghost"
-              size="sm"
-              className="h-6 text-xs text-neon-cyan/50 hover:text-neon-cyan hover:bg-black/50"
+              className="absolute right-0 top-0 h-full text-neon-cyan/50 hover:text-neon-cyan"
             >
-              Clear All
+              <Search className="h-4 w-4" />
             </Button>
           </div>
-          <div className="flex flex-wrap gap-2">
-            {selectedCategories.map((cat) => {
-              const category = categories.find((c) => c.slug === cat);
-              return category ? (
-                <Badge
-                  key={`active-cat-${category.slug}`}
-                  variant="outline"
-                  className="bg-black/50 text-neon-cyan border-neon-cyan/30 hover:border-neon-cyan group"
+        </form>
+
+        {(selectedCategories.length > 0 || selectedTags.length > 0) && (
+          <div className="space-y-2 mt-4">
+            <div className="flex items-center justify-between">
+              <Label className="text-xs uppercase tracking-wider text-gray-400">
+                Active Filters
+              </Label>
+              <Button
+                onClick={clearFilters}
+                variant="ghost"
+                size="sm"
+                className="h-6 text-xs text-neon-cyan/50 hover:text-neon-cyan hover:bg-black/50"
+              >
+                Clear All
+              </Button>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {selectedCategories.map((cat) => {
+                const category = categories.find((c) => c.slug === cat);
+                return category ? (
+                  <Badge
+                    key={`active-cat-${category.slug}`}
+                    variant="outline"
+                    className="bg-black/50 text-neon-cyan border-neon-cyan/30 hover:border-neon-cyan group"
+                  >
+                    {category.name}
+                    <X
+                      className="ml-1 h-3 w-3 cursor-pointer opacity-70 group-hover:opacity-100"
+                      onClick={() => toggleCategory(category.slug)}
+                    />
+                  </Badge>
+                ) : null;
+              })}
+              {selectedTags.map((tg) => {
+                const tag = tags.find((t) => t.slug === tg);
+                return tag ? (
+                  <Badge
+                    key={`active-tag-${tag.slug}`}
+                    variant="outline"
+                    className="bg-black/50 text-neon-pink border-neon-pink/30 hover:border-neon-pink group"
+                  >
+                    {tag.name}
+                    <X
+                      className="ml-1 h-3 w-3 cursor-pointer opacity-70 group-hover:opacity-100"
+                      onClick={() => toggleTag(tag.slug)}
+                    />
+                  </Badge>
+                ) : null;
+              })}
+            </div>
+          </div>
+        )}
+
+        {categories.length > 0 && (
+          <div className="space-y-3 mt-4">
+            <div className="flex items-center space-x-2">
+              <FolderOpen className="h-4 w-4 text-neon-cyan" />
+              <Label className="text-sm uppercase tracking-wider text-gray-300">
+                Categories
+              </Label>
+            </div>
+            <div className="pl-2 border-l border-neon-cyan/20 space-y-1">
+              {categories.map((category) => (
+                <button
+                  key={`cat-${category.slug}`}
+                  onClick={() => toggleCategory(category.slug)}
+                  className={`flex items-center justify-between w-full px-2 py-1 text-sm rounded-sm transition-colors cursor-pointer ${
+                    selectedCategories.includes(category.slug)
+                      ? "bg-neon-cyan/20 text-neon-cyan"
+                      : "text-gray-300 hover:bg-black/50"
+                  }`}
                 >
-                  {category.name}
-                  <X
-                    className="ml-1 h-3 w-3 cursor-pointer opacity-70 group-hover:opacity-100"
-                    onClick={() => toggleCategory(category.slug)}
-                  />
-                </Badge>
-              ) : null;
-            })}
-            {selectedTags.map((tg) => {
-              const tag = tags.find((t) => t.slug === tg);
-              return tag ? (
+                  <span>{category.name}</span>
+                  <CyberBadge
+                    variant="default"
+                    className="px-1.5 py-0.5 text-xs"
+                  >
+                    {category.postCount}
+                  </CyberBadge>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {tags.length > 0 && (
+          <div className="space-y-3 mt-4">
+            <div className="flex items-center space-x-2">
+              <Tag className="h-4 w-4 text-neon-pink" />
+              <Label className="text-sm uppercase tracking-wider text-gray-300">
+                Tags
+              </Label>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {tags.map((tag) => (
                 <Badge
-                  key={`active-tag-${tag.slug}`}
+                  key={`tag-${tag.slug}`}
                   variant="outline"
-                  className="bg-black/50 text-neon-pink border-neon-pink/30 hover:border-neon-pink group"
+                  onClick={() => toggleTag(tag.slug)}
+                  className={`py-1 cursor-pointer transition-all duration-200 ${
+                    selectedTags.includes(tag.slug)
+                      ? "bg-neon-pink/20 text-neon-pink border-neon-pink/50"
+                      : "bg-black/50 hover:bg-black/70 border-gray-700 text-gray-300"
+                  }`}
                 >
                   {tag.name}
-                  <X
-                    className="ml-1 h-3 w-3 cursor-pointer opacity-70 group-hover:opacity-100"
-                    onClick={() => toggleTag(tag.slug)}
-                  />
+                  <span className="ml-1 text-xs opacity-70">
+                    ({tag.postCount})
+                  </span>
                 </Badge>
-              ) : null;
-            })}
-          </div>
-        </div>
-      )}
-
-      {categories.length > 0 && (
-        <div className="space-y-3">
-          <div className="flex items-center space-x-2">
-            <FolderOpen className="h-4 w-4 text-neon-cyan" />
-            <Label className="text-sm uppercase tracking-wider text-gray-300">
-              Categories
-            </Label>
-          </div>
-          <div className="pl-2 border-l border-neon-cyan/20 space-y-1">
-            {categories.map((category) => (
-              <button
-                key={`cat-${category.slug}`}
-                onClick={() => toggleCategory(category.slug)}
-                className={`flex items-center justify-between w-full px-2 py-1 text-sm rounded-sm transition-colors cursor-pointer ${
-                  selectedCategories.includes(category.slug)
-                    ? "bg-neon-cyan/20 text-neon-cyan"
-                    : "text-gray-300 hover:bg-black/50"
-                }`}
-              >
-                <span>{category.name}</span>
-                <CyberBadge variant="default" className="px-1.5 py-0.5 text-xs">
-                  {category.postCount}
-                </CyberBadge>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {tags.length > 0 && (
-        <div className="space-y-3">
-          <div className="flex items-center space-x-2">
-            <Tag className="h-4 w-4 text-neon-pink" />
-            <Label className="text-sm uppercase tracking-wider text-gray-300">
-              Tags
-            </Label>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {tags.map((tag) => (
-              <Badge
-                key={`tag-${tag.slug}`}
-                variant="outline"
-                onClick={() => toggleTag(tag.slug)}
-                className={`py-1 cursor-pointer transition-all duration-200 ${
-                  selectedTags.includes(tag.slug)
-                    ? "bg-neon-pink/20 text-neon-pink border-neon-pink/50"
-                    : "bg-black/50 hover:bg-black/70 border-gray-700 text-gray-300"
-                }`}
-              >
-                {tag.name}
-                <span className="ml-1 text-xs opacity-70">
-                  ({tag.postCount})
-                </span>
-              </Badge>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {featuredPosts && featuredPosts.length > 0 && (
-        <div className="space-y-3">
-          <div className="flex items-center space-x-2">
-            <Label className="text-sm uppercase tracking-wider text-gray-300">
-              Featured Posts
-            </Label>
-          </div>
-          <Carousel
-            className="w-full"
-            plugins={[
-              Autoplay({
-                delay: 4000,
-              }),
-            ]}
-          >
-            <CarouselContent>
-              {featuredPosts.map((post, index) => (
-                <CarouselItem key={index}>
-                  <FeaturedPostCard key={index} post={post} />
-                </CarouselItem>
               ))}
-            </CarouselContent>
-          </Carousel>
-        </div>
-      )}
+            </div>
+          </div>
+        )}
 
-      <div className="mt-auto pt-4 border-t border-neon-cyan/20">
-        <div className="bg-gradient-to-r from-neon-cyan/0 via-neon-cyan/20 to-neon-pink/0 h-[1px] mb-2"></div>
-        <div className="text-xs text-gray-500 tracking-wide text-center">
-          <div className="uppercase">NET FILTERING SYSTEM</div>
-          <div className="text-[10px] font-mono mt-1">
-            {new Date().toISOString().split("T")[0]}
+        {featuredPosts && featuredPosts.length > 0 && (
+          <div className="space-y-3 mt-4">
+            <div className="flex items-center space-x-2">
+              <Label className="text-sm uppercase tracking-wider text-gray-300">
+                Featured Posts
+              </Label>
+            </div>
+            <Carousel
+              className="w-full"
+              plugins={[
+                Autoplay({
+                  delay: 4000,
+                }),
+              ]}
+            >
+              <CarouselContent>
+                {featuredPosts.map((post, index) => (
+                  <CarouselItem key={index}>
+                    <FeaturedPostCard key={index} post={post} />
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+            </Carousel>
+          </div>
+        )}
+
+        <div className="mt-auto pt-4 border-t border-neon-cyan/20">
+          <div className="bg-gradient-to-r from-neon-cyan/0 via-neon-cyan/20 to-neon-pink/0 h-[1px] mb-2"></div>
+          <div className="text-xs text-gray-500 tracking-wide text-center">
+            <div className="uppercase">NET FILTERING SYSTEM</div>
+            <div className="text-[10px] font-mono mt-1">
+              {new Date().toISOString().split("T")[0]}
+            </div>
           </div>
         </div>
-      </div>
+      </ScrollArea>
     </div>
   );
 };
