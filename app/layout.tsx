@@ -10,6 +10,8 @@ import { PerformanceProvider } from "@/lib/contexts/performance-mode";
 import type { Metadata } from "next";
 import { SessionProvider } from "next-auth/react";
 import { audiowide } from "./fonts";
+import { GoogleTagManager } from "@next/third-parties/google";
+
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -25,6 +27,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${audiowide.variable} ${audiowide.className}`}>
+      <GoogleTagManager gtmId="GTM-WW7NBMHC" />
       <body>
         <SessionProvider>
           <PerformanceProvider>
