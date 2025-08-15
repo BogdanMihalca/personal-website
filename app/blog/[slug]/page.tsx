@@ -7,7 +7,6 @@ import { BlogPostSidebar } from "@/components/custom/blog-post-sidebar";
 import { CyberBadge } from "@/components/custom/cyber-badge";
 import { CyberpunkButton } from "@/components/custom/cyber-button";
 import { DecoDivider } from "@/components/custom/deco-divider";
-import { GlitchText } from "@/components/custom/glitch-text";
 import { SharePostButton } from "@/components/custom/share-post-button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -287,7 +286,7 @@ export default async function PostDetail({ params }: PostDetailPageProps) {
           </div>
 
           <div className="space-y-6 mb-8">
-            <h1 className="text-2xl md:text-4xl lg:text-4xl font-bold text-white leading-tight">
+            <h1 className="text-2xl md:text-4xl lg:text-4xl font-bold text-white leading-tight md:max-w-[80%]">
               {post.title}
             </h1>
 
@@ -361,7 +360,7 @@ export default async function PostDetail({ params }: PostDetailPageProps) {
               ))}
             </div>
             {hasEditPermission && (
-              <div className="absolute top-20 right-4 flex gap-2">
+              <div className="hidden md:flex absolute top-20 right-4  gap-2">
                 {post.status === "PUBLISHED" && (
                   <SharePostButton
                     title={post.title}
@@ -414,7 +413,6 @@ export default async function PostDetail({ params }: PostDetailPageProps) {
               </div>
 
               <div className="space-y-6">
-                <GlitchText className="text-xl">{post.title}</GlitchText>
                 <ContentRenderer content={post.content?.toString()} />
               </div>
 

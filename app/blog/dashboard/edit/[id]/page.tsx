@@ -22,7 +22,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { DecoDivider } from "@/components/custom/deco-divider";
 import { motion } from "framer-motion";
-import { ArrowLeft, Save, Share } from "lucide-react";
+import { ArrowLeft, Save, Share, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ContentRenderer } from "@/lib/content-renderer";
@@ -56,6 +56,7 @@ export default function EditPostPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [seoData, setSeoData] = useState<SEOData>({});
+  const [isSharing, setIsSharing] = useState(false);
   const imageInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -194,6 +195,7 @@ export default function EditPostPage() {
     const currentValues = form.getValues();
     const postUrl = `${window.location.origin}/blog/${currentValues.slug}`;
 
+    setIsSharing(true);
     try {
       const response = await fetch("/api/automation/share-post", {
         method: "POST",
@@ -215,6 +217,8 @@ export default function EditPostPage() {
     } catch (error) {
       console.error("Error sharing:", error);
       toast.error("Failed to share post");
+    } finally {
+      setIsSharing(false);
     }
   };
 
@@ -285,10 +289,17 @@ export default function EditPostPage() {
               <CyberpunkButton
                 variant="secondary"
                 size="sm"
-                icon={<Share className="h-4 w-4" />}
+                icon={
+                  isSharing ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Share className="h-4 w-4" />
+                  )
+                }
                 onClick={handleShareToSocialMedia}
+                disabled={isSharing}
               >
-                SHARE_TO_SOCIAL
+                {isSharing ? "SHARING..." : "SHARE_TO_SOCIAL"}
               </CyberpunkButton>
             )}
             <CyberpunkButton

@@ -1,6 +1,7 @@
 "use client";
 
-import { Share } from "lucide-react";
+import { Share, Loader2 } from "lucide-react";
+import { useState } from "react";
 import { CyberpunkButton } from "./cyber-button";
 import { toast } from "sonner";
 
@@ -19,7 +20,10 @@ export function SharePostButton({
   imageUrl,
   tags,
 }: SharePostButtonProps) {
+  const [isSharing, setIsSharing] = useState(false);
+
   const handleShare = async () => {
+    setIsSharing(true);
     try {
       const response = await fetch("/api/automation/share-post", {
         method: "POST",
@@ -41,17 +45,26 @@ export function SharePostButton({
     } catch (error) {
       console.error("Error sharing:", error);
       toast.error("Failed to share post");
+    } finally {
+      setIsSharing(false);
     }
   };
 
   return (
     <CyberpunkButton
-      icon={<Share className="h-4 w-4" />}
+      icon={
+        isSharing ? (
+          <Loader2 className="h-4 w-4 animate-spin" />
+        ) : (
+          <Share className="h-4 w-4" />
+        )
+      }
       variant="secondary"
       size="sm"
       onClick={handleShare}
+      disabled={isSharing}
     >
-      Share
+      {isSharing ? "Sharing..." : "Share"}
     </CyberpunkButton>
   );
 }

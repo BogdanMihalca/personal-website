@@ -35,6 +35,7 @@ import {
   Trash2,
   MoreHorizontal,
   Share,
+  Loader2,
 } from "lucide-react";
 import {
   getDashboardPosts,
@@ -85,6 +86,7 @@ export function PostsTable({ userId, isAdmin }: PostsTableProps) {
   );
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [postToDelete, setPostToDelete] = useState<number | null>(null);
+  const [sharingPostId, setSharingPostId] = useState<number | null>(null);
 
   const POSTS_PER_PAGE = 10;
 
@@ -141,6 +143,7 @@ export function PostsTable({ userId, isAdmin }: PostsTableProps) {
   }
 
   async function handleShareToSocialMedia(post: Post) {
+    setSharingPostId(post.id);
     try {
       const postUrl = `${window.location.origin}/blog/${post.slug}`;
       const response = await fetch("/api/automation/share-post", {
@@ -163,6 +166,8 @@ export function PostsTable({ userId, isAdmin }: PostsTableProps) {
     } catch (error) {
       console.error("Error sharing:", error);
       toast.error("Failed to share post");
+    } finally {
+      setSharingPostId(null);
     }
   }
 
@@ -240,8 +245,16 @@ export function PostsTable({ userId, isAdmin }: PostsTableProps) {
             <DropdownMenuItem
               onClick={() => handleShareToSocialMedia(post)}
               className="text-blue-400 hover:text-white hover:bg-blue-800/20 focus:bg-blue-800/30 cursor-pointer"
+              disabled={sharingPostId === post.id}
             >
-              <Share className="mr-2 h-4 w-4" /> Share to Social Media
+              {sharingPostId === post.id ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Share className="mr-2 h-4 w-4" />
+              )}
+              {sharingPostId === post.id
+                ? "Sharing..."
+                : "Share to Social Media"}
             </DropdownMenuItem>
           )}
           <DropdownMenuSeparator className="bg-neon-cyan/20" />
