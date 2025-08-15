@@ -30,7 +30,7 @@ export default function RootLayout({
     <html lang="en" className={`${audiowide.variable} ${audiowide.className}`}>
       <GoogleTagManager gtmId="GTM-WW7NBMHC" />
       {/* Initialize GTM consent defaults */}
-      <Script id="gtm-consent-init" strategy="beforeInteractive">
+      <Script id="gtm-consent-init" strategy="beforeInteractive" defer>
         {`
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}

@@ -34,6 +34,7 @@ import {
   Edit,
   Trash2,
   MoreHorizontal,
+  Share,
 } from "lucide-react";
 import {
   getDashboardPosts,
@@ -44,6 +45,7 @@ import { PostStatus } from "@prisma/client";
 import { CyberpunkButton } from "./cyber-button";
 import { DeleteDialog } from "@/components/custom/table-utils";
 import { CyberPagination } from "./cyber-pagination";
+import { toast } from "sonner";
 
 interface PostsTableProps {
   userId: string;
@@ -138,6 +140,32 @@ export function PostsTable({ userId, isAdmin }: PostsTableProps) {
     setDeleteDialogOpen(true);
   }
 
+  async function handleShareToSocialMedia(post: Post) {
+    try {
+      const postUrl = `${window.location.origin}/blog/${post.slug}`;
+      const response = await fetch("/api/automation/share-post", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: post.title,
+          content: post.title, // Using title as content since we don't have full content here
+          url: postUrl,
+          imageUrl: "",
+          tags: [],
+        }),
+      });
+
+      if (response.ok) {
+        toast.success("Post shared to social media!");
+      } else {
+        toast.error("Failed to share post");
+      }
+    } catch (error) {
+      console.error("Error sharing:", error);
+      toast.error("Failed to share post");
+    }
+  }
+
   function getStatusBadge(status: PostStatus) {
     switch (status) {
       case "PUBLISHED":
@@ -208,6 +236,14 @@ export function PostsTable({ userId, isAdmin }: PostsTableProps) {
           >
             <Edit className="mr-2 h-4 w-4" /> Edit
           </DropdownMenuItem>
+          {post.status === PostStatus.PUBLISHED && (
+            <DropdownMenuItem
+              onClick={() => handleShareToSocialMedia(post)}
+              className="text-blue-400 hover:text-white hover:bg-blue-800/20 focus:bg-blue-800/30 cursor-pointer"
+            >
+              <Share className="mr-2 h-4 w-4" /> Share to Social Media
+            </DropdownMenuItem>
+          )}
           <DropdownMenuSeparator className="bg-neon-cyan/20" />
           {post.status !== PostStatus.PUBLISHED && (
             <DropdownMenuItem

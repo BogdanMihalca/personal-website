@@ -22,7 +22,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { DecoDivider } from "@/components/custom/deco-divider";
 import { motion } from "framer-motion";
-import { ArrowLeft, Save } from "lucide-react";
+import { ArrowLeft, Save, Share } from "lucide-react";
+import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ContentRenderer } from "@/lib/content-renderer";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -189,6 +190,34 @@ export default function EditPostPage() {
     name: "status",
   });
 
+  const handleShareToSocialMedia = async () => {
+    const currentValues = form.getValues();
+    const postUrl = `${window.location.origin}/blog/${currentValues.slug}`;
+
+    try {
+      const response = await fetch("/api/automation/share-post", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: currentValues.title,
+          content: currentValues.shortDesc || currentValues.title,
+          url: postUrl,
+          imageUrl: mainImage || "",
+          tags: [],
+        }),
+      });
+
+      if (response.ok) {
+        toast.success("Post shared to social media!");
+      } else {
+        toast.error("Failed to share post");
+      }
+    } catch (error) {
+      console.error("Error sharing:", error);
+      toast.error("Failed to share post");
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="container mx-auto px-4 py-8 font-mono text-zinc-300 mt-12">
@@ -251,21 +280,33 @@ export default function EditPostPage() {
             </h1>
           </div>
 
-          <CyberpunkButton
-            variant="primary"
-            size="sm"
-            icon={<Save className="h-4 w-4" />}
-            onClick={form.handleSubmit(onSubmit)}
-            loading={isSubmitting}
-          >
-            {status === PostStatus.PUBLISHED
-              ? "UPDATE_PUBLISHED_POST"
-              : status === PostStatus.DRAFT
-              ? "SAVE_DRAFT"
-              : status === PostStatus.ARCHIVED
-              ? "SAVE_ARCHIVED_POST"
-              : "SAVE_POST"}
-          </CyberpunkButton>
+          <div className="flex gap-2">
+            {status === PostStatus.PUBLISHED && (
+              <CyberpunkButton
+                variant="secondary"
+                size="sm"
+                icon={<Share className="h-4 w-4" />}
+                onClick={handleShareToSocialMedia}
+              >
+                SHARE_TO_SOCIAL
+              </CyberpunkButton>
+            )}
+            <CyberpunkButton
+              variant="primary"
+              size="sm"
+              icon={<Save className="h-4 w-4" />}
+              onClick={form.handleSubmit(onSubmit)}
+              loading={isSubmitting}
+            >
+              {status === PostStatus.PUBLISHED
+                ? "UPDATE_PUBLISHED_POST"
+                : status === PostStatus.DRAFT
+                ? "SAVE_DRAFT"
+                : status === PostStatus.ARCHIVED
+                ? "SAVE_ARCHIVED_POST"
+                : "SAVE_POST"}
+            </CyberpunkButton>
+          </div>
         </div>
       </motion.div>
 
