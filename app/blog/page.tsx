@@ -11,7 +11,7 @@ interface BlogPageProps {
   searchParams: any; //eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
-const POSTS_PER_PAGE = 3;
+const POSTS_PER_PAGE = 4;
 
 export default async function Page({ searchParams }: BlogPageProps) {
   const {

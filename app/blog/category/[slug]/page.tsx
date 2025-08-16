@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: CategoryPageProps) {
   };
 }
 
-const POSTS_PER_PAGE = 1;
+const POSTS_PER_PAGE = 4;
 
 export default async function CategoryPage({
   params,

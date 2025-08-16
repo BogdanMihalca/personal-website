@@ -20,6 +20,7 @@ const Navbar = () => {
   const { reducedAnimations, togglePerformanceMode } = usePerformanceMode();
   const pathname = usePathname();
   const menuRef = useRef<HTMLDivElement>(null);
+  const hamburgerRef = useRef<HTMLButtonElement>(null);
 
   const { data: session } = useSession();
 
@@ -64,7 +65,12 @@ const Navbar = () => {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(event.target as Node) &&
+        hamburgerRef.current &&
+        !hamburgerRef.current.contains(event.target as Node)
+      ) {
         setMenuOpen(false);
       }
     };
@@ -143,10 +149,12 @@ const Navbar = () => {
 
           <div className="md:hidden flex items-center">
             <button
+              ref={hamburgerRef}
               onClick={toggleMenu}
-              className="text-gray-300 hover:text-cyan-400 focus:outline-hidden"
+              className="text-gray-300 hover:text-cyan-400 focus:outline-none transition-colors duration-300 p-2"
               role="button"
-              aria-label="Toggle Menu"
+              aria-label={menuOpen ? "Close Menu" : "Open Menu"}
+              type="button"
             >
               <div className="w-6 h-5 flex flex-col justify-between">
                 <span
@@ -193,7 +201,7 @@ const Navbar = () => {
       {menuOpen && (
         <div
           ref={menuRef}
-          className="md:hidden bg-black bg-opacity-70 backdrop-blur-md border-t border-cyan-500/30 shadow-lg shadow-cyan-500/20"
+          className="md:hidden bg-black bg-opacity-70 backdrop-blur-md border-t border-cyan-500/30 shadow-lg shadow-cyan-500/20 max-h-[calc(100vh-80px)] overflow-y-auto"
         >
           <div className="container mx-auto px-4 py-4">
             <div className="flex flex-col space-y-4">
@@ -226,7 +234,9 @@ const Navbar = () => {
 
               {isBlogPage && (
                 <div className="pl-3 py-2 border-l-2 border-cyan-400/30">
-                  <BlogCategories mobile={true} setMenuOpen={setMenuOpen} />
+                  <div className="max-h-60 overflow-y-auto pr-2">
+                    <BlogCategories mobile={true} setMenuOpen={setMenuOpen} />
+                  </div>
                 </div>
               )}
             </div>

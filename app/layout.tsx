@@ -28,10 +28,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${audiowide.variable} ${audiowide.className}`}>
-      <GoogleTagManager gtmId="GTM-WW7NBMHC" />
-      {/* Initialize GTM consent defaults */}
-      <Script id="gtm-consent-init" strategy="beforeInteractive" defer>
-        {`
+      <body>
+        <GoogleTagManager gtmId="GTM-WW7NBMHC" />
+        {/* Initialize GTM consent defaults */}
+        <Script id="gtm-consent-init" strategy="beforeInteractive" defer>
+          {`
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
           
@@ -65,8 +66,7 @@ export default function RootLayout({
             }
           }
         `}
-      </Script>
-      <body>
+        </Script>
         <SessionProvider>
           <PerformanceProvider>
             <div className="min-h-screen bg-black text-gray-100 relative overflow-x-hidden pt-10 lg:pt-0">

@@ -148,7 +148,7 @@ const CookiePolicy = ({}) => {
         <div className="relative border-t border-cyan-500/50 bg-black/95 backdrop-blur-md">
           <div className="container mx-auto p-6">
             {!showDetails ? (
-              <div className="flex items-center justify-between gap-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6">
                 <div className="flex-1">
                   <h2 className="text-lg font-mono text-cyan-400 mb-2">
                     {reducedAnimations ? "Cookie Settings" : glitchedTitle}
@@ -166,11 +166,12 @@ const CookiePolicy = ({}) => {
                   </p>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
                   <CyberpunkButton
                     onClick={handleRejectAll}
                     variant="secondary"
                     size="sm"
+                    className="w-full sm:w-auto"
                   >
                     Essential Only
                   </CyberpunkButton>
@@ -178,6 +179,7 @@ const CookiePolicy = ({}) => {
                     onClick={() => setShowDetails(true)}
                     variant="warning"
                     size="sm"
+                    className="w-full sm:w-auto"
                   >
                     Customize
                   </CyberpunkButton>
@@ -185,6 +187,7 @@ const CookiePolicy = ({}) => {
                     onClick={handleAcceptAll}
                     variant="primary"
                     size="sm"
+                    className="w-full sm:w-auto"
                   >
                     Accept All
                   </CyberpunkButton>
