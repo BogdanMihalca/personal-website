@@ -255,7 +255,7 @@ const ContactSection = () => {
                   <div
                     className="cf-turnstile"
                     data-sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
-                    data-theme="light"
+                    data-theme="dark"
                     data-size="normal"
                     data-callback="onSuccess"
                   ></div>
