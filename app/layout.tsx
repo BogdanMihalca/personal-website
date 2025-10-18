@@ -67,6 +67,11 @@ export default function RootLayout({
           }
         `}
         </Script>
+        <Script
+          src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+          async
+          defer
+        />
         <SessionProvider>
           <PerformanceProvider>
             <div className="min-h-screen bg-black text-gray-100 relative overflow-x-hidden pt-10 lg:pt-0">

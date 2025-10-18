@@ -252,6 +252,14 @@ const ContactSection = () => {
                     </motion.div>
                   )}
 
+                  <div
+                    className="cf-turnstile"
+                    data-sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
+                    data-theme="light"
+                    data-size="normal"
+                    data-callback="onSuccess"
+                  ></div>
+
                   <div className="pt-2">
                     <CyberpunkButton
                       type="submit"
