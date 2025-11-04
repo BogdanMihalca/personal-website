@@ -11,13 +11,15 @@ const nextConfig: NextConfig = {
         hostname: "via.placeholder.com",
       },
       {
-        hostname: 'picsum.photos'
+        hostname: "picsum.photos",
       },
       {
         hostname: "res.cloudinary.com",
       },
-
     ],
+  },
+  turbopack: {
+    root: "./",
   },
 };
 

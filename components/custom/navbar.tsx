@@ -20,7 +20,6 @@ const Navbar = () => {
   const { reducedAnimations, togglePerformanceMode } = usePerformanceMode();
   const pathname = usePathname();
   const menuRef = useRef<HTMLDivElement>(null);
-  const hamburgerRef = useRef<HTMLButtonElement>(null);
 
   const { data: session } = useSession();
 
@@ -62,24 +61,6 @@ const Navbar = () => {
       setActiveSection("home");
     }
   }, [hash, isBlogPage, pathname]);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        menuRef.current &&
-        !menuRef.current.contains(event.target as Node) &&
-        hamburgerRef.current &&
-        !hamburgerRef.current.contains(event.target as Node)
-      ) {
-        setMenuOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
 
   return (
     <nav
@@ -149,7 +130,6 @@ const Navbar = () => {
 
           <div className="md:hidden flex items-center">
             <button
-              ref={hamburgerRef}
               onClick={toggleMenu}
               className="text-gray-300 hover:text-cyan-400 focus:outline-none transition-colors duration-300 p-2"
               role="button"
