@@ -104,7 +104,7 @@ export async function updateCommentStatus(commentId: number, status: CommentStat
 
         return updatedComment;
     } catch (error) {
-        console.error(`Error updating comment status to ${status}:`, error);
+        console.error("Error updating comment status to %s:", status, error);
         throw error;
     }
 }
