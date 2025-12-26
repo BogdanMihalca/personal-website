@@ -20,7 +20,6 @@ export function ContentRenderer({
 
   try {
     const parsedContent = JSON.parse(content);
-    console.log("Parsed content:", parsedContent);
 
     return renderNode(parsedContent);
   } catch (error) {
