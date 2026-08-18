@@ -8,19 +8,19 @@ export async function GET(request: NextRequest) {
     if (!(await isAuthorized(request))) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    const { posts } = await getDashboardPosts({ take: 5 });
+    const { posts } = await getDashboardPosts({ take: 10 });
 
     return NextResponse.json({
       recentPosts: posts.map((post) => post.title),
     });
   } catch (error) {
-    console.error("Error fetching categories:", error);
+    console.error("Error fetching recent posts:", error);
     return NextResponse.json(
       {
-        error: "Failed to fetch categories",
+        error: "Failed to fetch recent posts",
         details: (error as Error).message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
