@@ -84,6 +84,7 @@ function renderNode(node: ContentNode): React.ReactNode {
       );
 
     case "orderedList":
+    case "numberedList":
       return (
         <ol className="list-decimal pl-6 space-y-2 my-4 text-zinc-300">
           {node.content?.map((child, i) => (

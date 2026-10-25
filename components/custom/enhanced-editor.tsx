@@ -95,6 +95,8 @@ const EnhancedEditor = ({
       content
         .replaceAll("list_item", "listItem")
         .replaceAll("bullet_list", "bulletList")
+        .replaceAll("ordered_list", "orderedList")
+        .replaceAll("numberedList", "orderedList")
     ),
     onUpdate: ({ editor }) => {
       onChange?.(JSON.stringify(editor.getJSON()));
