@@ -6,33 +6,56 @@ export default function robots(): MetadataRoute.Robots {
 
   return {
     rules: [
+      // ── General crawlers ────────────────────────────────────────────────
       {
         userAgent: "*",
-        allow: "/",
+        allow: ["/", "/blog", "/llms.txt"],
         disallow: [
           "/api/",
           "/blog/dashboard/",
           "/admin/",
           "/_next/",
           "/private/",
+          "/api/trap",
         ],
       },
       {
-        userAgent: "GPTBot",
-        disallow: "/",
+        userAgent: "PerplexityBot",
+        allow: ["/", "/blog"],
+        disallow: ["/api/", "/admin/", "/private/", "/blog/dashboard/"],
       },
       {
         userAgent: "ChatGPT-User",
-        disallow: "/",
+        allow: ["/", "/blog"],
+        disallow: ["/api/", "/admin/", "/private/", "/blog/dashboard/"],
       },
       {
-        userAgent: "CCBot",
-        disallow: "/",
+        userAgent: "Claude-Web",
+        allow: ["/", "/blog"],
+        disallow: ["/api/", "/admin/", "/private/", "/blog/dashboard/"],
       },
       {
-        userAgent: "anthropic-ai",
-        disallow: "/",
+        userAgent: "YouBot",
+        allow: ["/", "/blog"],
+        disallow: ["/api/", "/admin/", "/private/", "/blog/dashboard/"],
       },
+      {
+        userAgent: "PetalBot",
+        allow: ["/", "/blog"],
+        disallow: ["/api/", "/admin/", "/private/", "/blog/dashboard/"],
+      },
+      { userAgent: "GPTBot", disallow: "/" },
+      { userAgent: "CCBot", disallow: "/" },
+      { userAgent: "anthropic-ai", disallow: "/" },
+      { userAgent: "Omgilibot", disallow: "/" },
+      { userAgent: "FacebookBot", disallow: "/" },
+      { userAgent: "Google-Extended", disallow: "/" },
+      { userAgent: "Bytespider", disallow: "/" },
+      { userAgent: "cohere-ai", disallow: "/" },
+
+      { userAgent: "DataForSeoBot", disallow: "/" },
+      { userAgent: "SemrushBot", disallow: "/" },
+      { userAgent: "AhrefsBot", disallow: "/" },
     ],
     sitemap: `${baseUrl}/sitemap.xml`,
   };

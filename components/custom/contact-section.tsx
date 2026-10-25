@@ -1,7 +1,7 @@
 "use client";
 import { motion, useInView } from "framer-motion";
 import { Github, Instagram, Linkedin, Mail, Send } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CyberpunkButton } from "./cyber-button";
 import { GlitchText } from "./glitch-text";
 import { HologramContainer } from "./hologram-container";
@@ -58,6 +58,14 @@ const ContactSection = () => {
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState("");
 
+  const formLoadTime = useRef<number>(Date.now());
+
+  const [honeypot, setHoneypot] = useState("");
+
+  useEffect(() => {
+    formLoadTime.current = Date.now();
+  }, [submitSuccess]);
+
   const sectionRef = useRef<HTMLElement>(null);
   const isInView = useInView(sectionRef, { once: false, margin: "-100px" });
 
@@ -80,7 +88,11 @@ const ContactSection = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(values),
+        body: JSON.stringify({
+          ...values,
+          _hp: honeypot,
+          _t: formLoadTime.current,
+        }),
       });
 
       if (!response.ok) {
@@ -158,6 +170,31 @@ const ContactSection = () => {
                   onSubmit={form.handleSubmit(onSubmit)}
                   className="space-y-6"
                 >
+
+                  <div
+                    aria-hidden="true"
+                    style={{
+                      position: "absolute",
+                      left: "-9999px",
+                      top: "-9999px",
+                      width: "1px",
+                      height: "1px",
+                      overflow: "hidden",
+                      opacity: 0,
+                      pointerEvents: "none",
+                    }}
+                  >
+                    <label htmlFor="_hp">Leave this field empty</label>
+                    <input
+                      id="_hp"
+                      name="_hp"
+                      type="text"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      value={honeypot}
+                      onChange={(e) => setHoneypot(e.target.value)}
+                    />
+                  </div>
                   <FormField
                     control={form.control}
                     name="name"
@@ -355,13 +392,12 @@ const ContactSection = () => {
                           </div>
                         )}
                         <span
-                          className={`ml-3 text-sm transition-all duration-300 ${
-                            link.name === "GitHub"
-                              ? "text-green-300 group-hover:text-green-200"
-                              : link.name === "LinkedIn"
+                          className={`ml-3 text-sm transition-all duration-300 ${link.name === "GitHub"
+                            ? "text-green-300 group-hover:text-green-200"
+                            : link.name === "LinkedIn"
                               ? "text-cyan-400 group-hover:text-cyan-300"
                               : "text-pink-500 group-hover:text-pink-400"
-                          }`}
+                            }`}
                         >
                           {link.name}
                         </span>
